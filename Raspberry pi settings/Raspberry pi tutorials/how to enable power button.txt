@@ -1,0 +1,6 @@
+1. open terminal
+2. open /boot/config.txt
+3. at the end add line:
+dtoverlay=gpio-shutdown, gpio_pin=21 #(active_low=0 for switch which is normally closed)
+
+setup connect switch to gpio_pin 21 which was selected and to ground (default pin is 3)
