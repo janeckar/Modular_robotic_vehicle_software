@@ -10,6 +10,7 @@ const int echo = 24;     // wPi .. 5
 
 
 int main() {
+    // Setups the WiringPi to use Broadcom pinout (in compliance with raspberry pi Gpio pins)
     if (wiringPiSetupGpio() == -1)
         return -1;
 
@@ -18,7 +19,7 @@ int main() {
     cout << "Hello, World!" << std::endl;
 
     while(1){
-        cout << "Distance is " << sonar.Distance(10000000) << " cm." << endl;
+        cout << "Distance is " << sonar.Distance(30000) << " cm." << endl;
         delay(1000);
     }
 

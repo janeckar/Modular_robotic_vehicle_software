@@ -7,24 +7,30 @@
 #ifndef HC_SR04_H
 #define HC_SR04_H
 
+#include <map>
 
 class HC_SR04 {
 
   private:
-    int trigger;
-    int echo;
+    static int count;
+    int id;
+    //static std::map<int, long long> startTime; // echo : startTime
+    static volatile long long startTime;
+
+    static int trigger;
+    static int echo;
     // used from: http://wiki.ros.org/Drivers/Tutorials/DistanceMeasurementWithUltrasonicSensorHC-SR04Cpp
     // slightly modified
     //volatile for the two lines below
     long long startTimeUsec;
     long long endTimeUsec;
     double distance_cm;
-    long long travelTimeUsec;
+    static volatile long long travelTimeUsec;
     long long now;
     void recordPulseLength();
     // end
 
-    int Travel_time_ms();
+    static void EchoInterrupt();
 
   public:
     /**
@@ -33,6 +39,7 @@ class HC_SR04 {
      * @par echo GPIO pin number
      */
     HC_SR04(int trigger, int echo);
+    ~HC_SR04();
 
     double Distance(int timeout);
 };
