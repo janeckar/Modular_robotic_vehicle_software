@@ -16,10 +16,9 @@ int main() {
 
     HC_SR04 sonar(trigger, echo);
 
-    cout << "Hello, World!" << std::endl;
-
     while(1){
-        cout << "Distance is " << sonar.Distance(30000) << " cm." << endl;
+        //cout << "Distance is " << sonar.Distance(30000) << " cm." << endl;
+        cout << "Sensor timeout is " << sonar.MeassureSensorTimeout(300) << "us\n";
         delay(1000);
     }
 

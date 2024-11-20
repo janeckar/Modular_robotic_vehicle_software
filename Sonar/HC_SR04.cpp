@@ -3,20 +3,23 @@
 // inspired (used from): http://wiki.ros.org/Drivers/Tutorials/DistanceMeasurementWithUltrasonicSensorHC-SR04Cpp
 //
 
-#include <iostream>
 #include <wiringPi.h>
 #include "HC_SR04.h"
 
 int HC_SR04::count = 0;
-volatile long long HC_SR04::startTime = 0;
+volatile long long HC_SR04::startTimeUsec = 0;
+volatile long long HC_SR04::travelTimeUsec = 0;
+int HC_SR04::echo = 0;
+
 
 void HC_SR04::EchoInterrupt(){
   long long time = micros();
   if(digitalRead(echo) == HIGH){
-    startTime = time;
+    startTimeUsec = time;
+    travelTimeUsec = 0;
   } else{
-    travelTimeUsec = time - startTime;
-    startTime = 0;
+    travelTimeUsec = time - startTimeUsec;
+    startTimeUsec = 0;
   }
 }
 
@@ -24,9 +27,8 @@ HC_SR04::HC_SR04(int trigger_pin, int echo_pin){
   trigger = trigger_pin;
   echo = echo_pin;
   // Set HC_SR04 id
-  id = echo;
-  count++;
-  //startTime.push_back(0);
+  //id = echo;
+  //count++;
   
   pinMode(trigger, OUTPUT);
   pinMode(echo, INPUT);
@@ -36,38 +38,35 @@ HC_SR04::HC_SR04(int trigger_pin, int echo_pin){
 }
 
 HC_SR04::~HC_SR04(){
-  count--;
+  //count--;
 }
 
 double HC_SR04::Distance(int timeout)
 {
   delay(10);
+  SendTrigger();
 
-    digitalWrite(trigger, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(trigger, LOW);
+  delay(20); // 20 ms so the ulrasound has time to travel back
 
-    delay(30); // 30 ms
+  //distanceMeters = 100*((travelTimeUsec/1000000.0)*340.29)/2;
+  distance_cm = travelTimeUsec * 340.29 / 20000;
 
-    //now=micros();
-
-    //while (digitalRead(echo) == LOW && micros()-now<timeout); // experimentally i found out that the propagation time on echo pin is less than 450 us, so safe bet is 1 ms
-    //recordPulseLength();
-    //travelTimeUsec = endTimeUsec - startTimeUsec;
-    
-    //int traveltime = endTimeUsec - now;
-    //std::cout << "travel time" << travelTimeUsec << " " << traveltime << std::endl;
-    //distanceMeters = 100*((travelTimeUsec/1000000.0)*340.29)/2;
-    distance_cm = travelTimeUsec * 340.29 / 20000;
-
-    return distance_cm;
+  return distance_cm;
 } 
 
-void HC_SR04::recordPulseLength()
+long long HC_SR04::MeassureSensorTimeout(int timeout_ms){
+  delay(10);
+  SendTrigger();
+  delay(timeout_ms);
+
+  return travelTimeUsec;
+}
+
+void HC_SR04::SendTrigger()
 {
-    startTimeUsec = micros();
-    while ( digitalRead(echo) == HIGH);
-    endTimeUsec = micros();
+  digitalWrite(trigger, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigger, LOW);
 }
 
 
