@@ -4,11 +4,16 @@
 
 using namespace std;
 
+// Broadcom pinout right now
+const int trigger = 18;  // wPi .. 1
+const int echo = 24;     // wPi .. 5
+
+
 int main() {
-    if (wiringPiSetup() == -1)
+    if (wiringPiSetupGpio() == -1)
         return -1;
 
-    HC_SR04 sonar(1, 5);
+    HC_SR04 sonar(trigger, echo);
 
     cout << "Hello, World!" << std::endl;
 
