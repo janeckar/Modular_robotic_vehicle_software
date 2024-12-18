@@ -38,6 +38,8 @@ HC_SR04::HC_SR04(int trigger_pin, int echo_pin){
 }
 
 HC_SR04::~HC_SR04(){
+  pinMode(echo, INPUT);
+  pinMode(trigger, INPUT);
   //count--;
 }
 

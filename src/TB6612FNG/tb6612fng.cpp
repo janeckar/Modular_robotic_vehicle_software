@@ -24,6 +24,12 @@ TB6612FNG::TB6612FNG(int pwm, int in1, int in2){
     pwmWrite(pwm_pin, 0);
 }
 
+TB6612FNG::~TB6612FNG(){
+    pinMode(pwm_pin, INPUT);
+    pinMode(in1_pin, INPUT);
+    pinMode(in2_pin, INPUT);
+}
+
 void TB6612FNG::set_power(int power){
     power = std::clamp(power, -MAX_PWM_VAL, MAX_PWM_VAL);
     std::cout << "duty_cycle: " << power << std::endl;
