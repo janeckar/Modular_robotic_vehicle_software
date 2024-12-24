@@ -7,7 +7,7 @@
 #include <iostream>
 #include <wiringPi.h>
 #include <signal.h>
-#include "tb6612fng.h"
+#include "../MotorHat_Adafruit/tb6612fng.h"
 
 using namespace std;
 

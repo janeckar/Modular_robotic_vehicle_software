@@ -60,25 +60,62 @@ class pca9685 {
     int all_fd;
   public:
     /**
-     * @par i2c_addr I2C address of peripheral
+     * @brief creates object representing pca9685 chip
+     * 
+     * @param i2c_addr I2C address of peripheral
      * @throw system_error
      */
     explicit pca9685(int i2c_addr);
     ~pca9685();
 
-    /**
-     * @par freq in range <24; 1526> Hz
+    /** 
+     * @brief Sets PWM frequency of the outputs
+     * 
+     * @param freq in range <24; 1526> Hz
+     * @return int
      */
     int Set_pwm_frequency(int freq);
 
     /**
-     * @par LED_num can be <0; 15>
-     * @par duty_cycle can be in range <0; 4095>
+     * @brief Sets duty cycle of PWM signal
+     * 
+     * @param LED_num can be <0; 15>
+     * @param rising_edge_time can be in range <0; 4095>
+     * @param duty_cycle can be in range <0; 4095>
+     * @return int
      */
-    int Write_pwm_led(uint8_t LED_num, uint16_t rising_edge_time,  uint16_t duty_cycle); 
+    int Write_pwm_led(uint8_t LED_num, uint16_t rising_edge_time,  uint16_t duty_cycle);
+
+    /**
+     * @brief 
+     * 
+     * @param rising_edge_time can be in range <0; 4095>
+     * @param duty_cycle can be in range <0; 4095>
+     * @return int 
+     */
     int Write_pwm_all(uint16_t rising_edge_time, uint16_t duty_cycle);
+
+    /**
+     * @brief Sets the led output to be constantly HIGH
+     * 
+     * @param LED_num 
+     * @return int 
+     */
     int Turn_on_led(uint8_t LED_num);
+
+    /**
+     * @brief Sets the led output to be constantly LOW
+     * 
+     * @param LED_num 
+     * @return int 
+     */
     int Turn_off_led(uint8_t LED_num);
+
+    /**
+     * @brief Sets outputs of all channels to LOW value
+     * 
+     * @return int 
+     */
     int Clear_all_pwm();
 
 };

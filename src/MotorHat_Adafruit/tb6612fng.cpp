@@ -48,3 +48,34 @@ void TB6612FNG::coast(){
     digitalWrite(in1_pin, LOW);
     digitalWrite(in2_pin, LOW);
 }
+
+// TB6612FNG_I2C
+
+TB6612FNG_I2C::TB6612FNG_I2C(int address, int pwm, int in1, int in2) : pwmModule{address} {
+    pwm_pin = pwm;
+    in1_pin = in1;
+    in2_pin = in2;
+    pwmModule.Set_pwm_frequency(MAX_FREQUENCY);
+}
+
+TB6612FNG_I2C::~TB6612FNG_I2C() = default;
+
+void TB6612FNG_I2C::set_power(int power){
+    power = std::clamp(power, -PWM_RESOLUTION, PWM_RESOLUTION);
+    std::cout << "duty_cycle: " << power << std::endl;
+    
+    pwmModule.Write_pwm_led(pwm_pin, 0, std::abs(power)); // TODO maybe add parameter for rising edge time
+    if(power < 0){
+        pwmModule.Turn_off_led(in1_pin);
+        pwmModule.Turn_on_led(in2_pin);
+    } else{
+        pwmModule.Turn_off_led(in2_pin);
+        pwmModule.Turn_on_led(in1_pin);
+    }
+}
+
+void TB6612FNG_I2C::coast(){
+    pwmModule.Turn_on_led(pwm_pin);
+    pwmModule.Turn_off_led(in1_pin);
+    pwmModule.Turn_off_led(in2_pin);
+}
