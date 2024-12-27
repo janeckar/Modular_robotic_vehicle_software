@@ -27,6 +27,7 @@ pca9685::pca9685(int i2c_addr){
     res |= Set_pwm_frequency(DEFAULT_FREQUENCY);
     res |= Clear_all_pwm();
     if(res < 0)
+        pca9685::~pca9685();
         throw std::system_error{errno, std::system_category(), "Failed to initialize PCA9685."};
 }
 
@@ -58,13 +59,23 @@ int pca9685::Set_pwm_frequency(int freq){
 int pca9685::Write_pwm_led(uint8_t LED_num, uint16_t rising_edge_time,  uint16_t duty_cycle){
     if(LED_num > 15)
         return -1;
-    int offset = LED_SHIFT * LED_num;
-    uint16_t off_time = (rising_edge_time + duty_cycle) % PWM_RESOLUTION;
-    int res = wiringPiI2CWriteReg8(device_fd, LED0_ON_L + offset, rising_edge_time & 0xFF);
-    res |= wiringPiI2CWriteReg8(device_fd, LED0_ON_H + offset, rising_edge_time >> 8);
-    res |= wiringPiI2CWriteReg8(device_fd, LED0_OFF_L + offset, off_time & 0xFF);
-    res |= wiringPiI2CWriteReg8(device_fd, LED0_OFF_H + offset, off_time >> 8);
-    return res;
+
+    switch(duty_cycle){
+        case 0:
+            return Turn_off_led(LED_num);
+            break;
+        case PWM_RESOLUTION:
+            return Turn_on_led(LED_num);
+            break;
+        default:
+            int offset = LED_SHIFT * LED_num;
+            uint16_t off_time = (rising_edge_time + duty_cycle) % PWM_RESOLUTION;
+            int res = wiringPiI2CWriteReg8(device_fd, LED0_ON_L + offset, rising_edge_time & 0xFF);
+            res |= wiringPiI2CWriteReg8(device_fd, LED0_ON_H + offset, rising_edge_time >> 8);
+            res |= wiringPiI2CWriteReg8(device_fd, LED0_OFF_L + offset, off_time & 0xFF);
+            res |= wiringPiI2CWriteReg8(device_fd, LED0_OFF_H + offset, off_time >> 8);
+            return res;
+    } 
 }
 
 int pca9685::Write_pwm_all(uint16_t rising_edge_time, uint16_t duty_cycle){

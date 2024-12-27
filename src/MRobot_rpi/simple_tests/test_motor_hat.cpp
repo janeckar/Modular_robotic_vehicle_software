@@ -7,7 +7,7 @@
 #include <iostream>
 #include <wiringPi.h>
 #include <signal.h>
-#include "motor_hat.h"
+#include <motor_hat.h>
 
 using namespace std;
 
@@ -18,8 +18,6 @@ void signal_callback_handler(int signum) {
     cout << "Caught signal " << signum << endl;
     wasSigint = true;
 }
-
-
 
 int main(int argc, char** args){
     // Setups the WiringPi to use Broadcom pinout (in compliance with raspberry pi Gpio pins)

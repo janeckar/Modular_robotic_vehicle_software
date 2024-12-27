@@ -81,7 +81,7 @@ class pca9685 {
      * 
      * @param LED_num can be <0; 15>
      * @param rising_edge_time can be in range <0; 4095>
-     * @param duty_cycle can be in range <0; 4095>
+     * @param duty_cycle can be in range <0; 4096>
      * @return int
      */
     int Write_pwm_led(uint8_t LED_num, uint16_t rising_edge_time,  uint16_t duty_cycle);
