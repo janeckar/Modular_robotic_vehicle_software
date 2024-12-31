@@ -26,9 +26,10 @@ pca9685::pca9685(int i2c_addr){
     // write default frequency
     res |= Set_pwm_frequency(DEFAULT_FREQUENCY);
     res |= Clear_all_pwm();
-    if(res < 0)
+    if(res < 0){
         pca9685::~pca9685();
         throw std::system_error{errno, std::system_category(), "Failed to initialize PCA9685."};
+    }
 }
 
 pca9685::~pca9685(){
@@ -49,7 +50,7 @@ int pca9685::Set_pwm_frequency(int freq){
     }
     uint8_t newmode1 = (oldmode1 & ~RESTART) | SLEEP; // turn off internal clk
     int res = wiringPiI2CWriteReg8(device_fd, MODE1, newmode1);
-    res |= wiringPiI2CWriteReg8(device_fd, PRE_SCALE, pre_scale_val); 
+    res |= wiringPiI2CWriteReg8(device_fd, PRE_SCALE, pre_scale_val);
     res |= wiringPiI2CWriteReg8(device_fd, MODE1, oldmode1); // turn on internall clk
     delay(1); //ms
     res |= wiringPiI2CWriteReg8(device_fd, MODE1, oldmode1 | RESTART);
