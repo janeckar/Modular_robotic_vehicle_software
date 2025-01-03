@@ -7,7 +7,7 @@
 
 #include <iostream>
 #include <wiringPi.h>
-#include "Encoder.h"
+#include "SpecializedEncoder.h"
 
 const int pinA_FLM = 7;
 const int pinB_FLM = 5; // FLM ... front left motor
@@ -22,17 +22,30 @@ int main(int argc, char* argv[]){
     if(wiringPiSetupGpio() < 0)
         return -1;
 
-    Encoder encoder_FLM(pinA_FLM, pinB_FLM);
-    Encoder encoder_RLM(pinA_RLM, pinB_RLM);
-    Encoder encoder_FRM(pinA_FRM, pinB_FRM);
-    Encoder encoder_RRM(pinA_RRM, pinB_RRM);
+    SpecializedEncoder encoder_FLM(pinA_FLM, pinB_FLM, 265, 6.5);
+    SpecializedEncoder encoder_RLM(pinA_RLM, pinB_RLM, 265, 6.5);
+    SpecializedEncoder encoder_FRM(pinA_FRM, pinB_FRM, 265, 6.5);
+    SpecializedEncoder encoder_RRM(pinA_RRM, pinB_RRM, 265, 6.5);
+    // experimentálně bylo zjištěno 265.3 pulsu za otocku pro RRM
+    //                              265.35 pro FRM
+    //                              265.35 pro FLM
+    //                              265.19
 
 
     while(true){
         std::cout << "delta_FLM: " << encoder_FLM.GetDeltaPulses() 
-                  << "delta_RLM: " << encoder_RLM.GetDeltaPulses() 
-                  << "delta_FRM: " << encoder_FRM.GetDeltaPulses() 
-                  << "delta_RRM: " << encoder_RRM.GetDeltaPulses() << std::endl;
+                  << " delta_RLM: " << encoder_RLM.GetDeltaPulses() 
+                  << " delta_FRM: " << encoder_FRM.GetDeltaPulses() 
+                  << " delta_RRM: " << encoder_RRM.GetDeltaPulses() << std::endl;
+        // std::cout << "delta_FLM: "  << encoder_FLM.GetCount() 
+        //           << " delta_RLM: " << encoder_RLM.GetCount() 
+        //           << " delta_FRM: " << encoder_FRM.GetCount() 
+        //           << " delta_RRM: " << encoder_RRM.GetCount() 
+        //                             << std::endl;
+        // std::cout << "delta_FLM: " << encoder_FLM.GetDeltaDistance() 
+        //           << " delta_RLM: " << encoder_RLM.GetDeltaDistance() 
+        //           << " delta_FRM: " << encoder_FRM.GetDeltaDistance() 
+        //           << " delta_RRM: " << encoder_RRM.GetDeltaDistance() << std::endl;
         delay(100);
     }
 

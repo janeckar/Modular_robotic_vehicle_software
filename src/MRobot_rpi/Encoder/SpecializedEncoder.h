@@ -15,9 +15,9 @@ class SpecializedEncoder : public Encoder{
     double distance_per_pulse;
   public:
     SpecializedEncoder(int signal_A, int signal_B, int pulses_per_rotation, double diameter_cm);
-    virtual ~SpecializedEncoder();
+    virtual ~SpecializedEncoder() = default;
 
-    double GetDeltaSpeed();
+    double GetDeltaDistance();
 };
 
 #endif // SPECIALIZED_ENCODER_H

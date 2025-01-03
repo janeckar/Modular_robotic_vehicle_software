@@ -14,12 +14,10 @@
 using namespace std::numbers;
 
 SpecializedEncoder::SpecializedEncoder(int signal_A, int signal_B, int pulses_per_rotation, double diameter_cm) : Encoder(signal_A, signal_B){
-    double i = pi;
+    distance_per_pulse = diameter_cm * pi / pulses_per_rotation;
+    
 }
 
-SpecializedEncoder::~SpecializedEncoder() {
-}
-
-double SpecializedEncoder::GetDeltaSpeed(){
-    return 0.0;
+double SpecializedEncoder::GetDeltaDistance(){
+    return GetDeltaPulses() * distance_per_pulse;
 }
