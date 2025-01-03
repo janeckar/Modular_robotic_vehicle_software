@@ -1,0 +1,26 @@
+#include <iostream>
+#include <wiringPi.h>
+#include "HC_SR04.h"
+
+using namespace std;
+
+// Broadcom pinout right now
+const int trigger = 18;  // wPi .. 1
+const int echo = 24;     // wPi .. 5
+
+
+int main() {
+    // Setups the WiringPi to use Broadcom pinout (in compliance with raspberry pi Gpio pins)
+    if (wiringPiSetupGpio() == -1)
+        return -1;
+
+    HC_SR04 sonar(trigger, echo);
+
+    while(1){
+        //cout << "Distance is " << sonar.Distance(30000) << " cm." << endl;
+        cout << "Sensor timeout is " << sonar.MeassureSensorTimeout(300) << "us\n";
+        delay(1000);
+    }
+
+    return 0;
+}
