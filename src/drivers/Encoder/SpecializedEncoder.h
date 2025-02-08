@@ -17,7 +17,12 @@ class SpecializedEncoder : public Encoder{
     SpecializedEncoder(int signal_A, int signal_B, int pulses_per_rotation, double diameter_cm);
     virtual ~SpecializedEncoder() = default;
 
-    double GetDeltaDistance();
+    /**
+     * @brief must be called periodically at delta time to be precise
+     * 
+     * @return double delta distance in metres
+     */
+    double GetDeltaDistance_m();
 };
 
 #endif // SPECIALIZED_ENCODER_H

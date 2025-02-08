@@ -42,10 +42,10 @@ int main(int argc, char* argv[]){
         //           << " delta_FRM: " << encoder_FRM.GetCount() 
         //           << " delta_RRM: " << encoder_RRM.GetCount() 
         //                             << std::endl;
-        // std::cout << "delta_FLM: " << encoder_FLM.GetDeltaDistance() 
-        //           << " delta_RLM: " << encoder_RLM.GetDeltaDistance() 
-        //           << " delta_FRM: " << encoder_FRM.GetDeltaDistance() 
-        //           << " delta_RRM: " << encoder_RRM.GetDeltaDistance() << std::endl;
+        // std::cout << "delta_FLM: " << encoder_FLM.GetDeltaDistance_m() 
+        //           << " delta_RLM: " << encoder_RLM.GetDeltaDistance_m() 
+        //           << " delta_FRM: " << encoder_FRM.GetDeltaDistance_m() 
+        //           << " delta_RRM: " << encoder_RRM.GetDeltaDistance_m() << std::endl;
         delay(100);
     }
 

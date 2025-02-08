@@ -18,7 +18,8 @@ option(BUILD_PC "build for main pc, direct robot hardware access not needed" OFF
 add_subdirectory(MRobot_common)
 
 if(BUILD_RASPBERRYPI)
-    add_subdirectory(MRobot_rpi)
+    add_subdirectory(drivers)
+    add_subdirectory(YARP_devices)
 endif()
 
 if(BUILD_PC)
