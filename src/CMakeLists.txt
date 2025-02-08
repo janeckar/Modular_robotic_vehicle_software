@@ -13,15 +13,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/executables)
 file(MAKE_DIRECTORY ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
 option(BUILD_RASPBERRYPI "build for raspberrypi specific code" OFF)
-option(BUILD_PC "build for main pc, direct robot hardware access not needed" OFF)
-
-add_subdirectory(MRobot_common)
 
 if(BUILD_RASPBERRYPI)
     add_subdirectory(drivers)
-    add_subdirectory(YARP_devices)
-endif()
-
-if(BUILD_PC)
-    add_subdirectory(MRobot_pc)
 endif()
