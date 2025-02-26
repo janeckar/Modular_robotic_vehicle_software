@@ -2,6 +2,10 @@
 *cmake-build-debug/
 *build*
 
+# ros2 generated directories
+*log*
+*install*
+
 # IDE directory
 *.idea/
 *.vscode/
