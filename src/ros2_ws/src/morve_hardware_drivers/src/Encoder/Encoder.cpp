@@ -9,7 +9,10 @@
 #include <stdexcept>
 #include <climits>
 #include <wiringPi.h>
+#include <unistd.h>
+#include <system_error>
 #include "morve_hardware_drivers/Encoder/Encoder.h"
+#include "morve_hardware_drivers/hardware_error.h"
 
 #include <iostream>
 
@@ -38,22 +41,27 @@ Encoder::~Encoder(){
 }
 
 void Encoder::setup_interrupt(uint64_t interrupt_num){
+    int res = 0;
     switch(interrupt_num){
         case Num1:
-            wiringPiISR(pin_A.at(Num1), INT_EDGE_RISING, signal_A1_interrupt);
+            res = wiringPiISR(pin_A.at(Num1), INT_EDGE_RISING, signal_A1_interrupt);
             break;
         case Num2:
-            wiringPiISR(pin_A.at(Num2), INT_EDGE_RISING, signal_A2_interrupt);
+            res = wiringPiISR(pin_A.at(Num2), INT_EDGE_RISING, signal_A2_interrupt);
             break;
         case Num3:
-            wiringPiISR(pin_A.at(Num3), INT_EDGE_RISING, signal_A3_interrupt);
+            res = wiringPiISR(pin_A.at(Num3), INT_EDGE_RISING, signal_A3_interrupt);
             break;
         case Num4:
-            wiringPiISR(pin_A.at(Num4), INT_EDGE_RISING, signal_A4_interrupt);
+            res = wiringPiISR(pin_A.at(Num4), INT_EDGE_RISING, signal_A4_interrupt);
             break;
         default:
             std::string msg = "Interrupt function number " + std::to_string(interrupt_num) + "not existing.";
             throw std::runtime_error(msg);
+    }
+    if(res < 0){
+        std::string msg = "Tried to register interrupt for GPIO pin number " + std::to_string(pin_A.at(interrupt_num)) + " but probably is already in use.";
+        throw hardware_error(msg);
     }
 }
 
@@ -89,18 +97,23 @@ void Encoder::signal_A4_interrupt(){
     }
 }
 
-uint32_t Encoder::GetCount(){
+uint32_t Encoder::GetCount() const{
     return cnt[obj_num];   
 }
 
-int64_t Encoder::GetDeltaPulses(){
+void Encoder::ResetCounters(){
+    cnt[obj_num] = 0;
+    cnt_old[obj_num] = 0;
+}
+
+void Encoder::RefreshDeltaPulses(){
     // cnt and cnt_old number are unsigned int 32bit numbers
-    int64_t delta = cnt[obj_num] - cnt_old[obj_num];
-    if(delta > INT32_MAX){
-        delta -= UINT32_RANGE;
-    } else if(delta < INT32_MIN){
-        delta += UINT32_RANGE;
+    uint32_t cnt_new = cnt[obj_num];
+    delta_pulses = cnt_new - cnt_old[obj_num];
+    if(delta_pulses > INT32_MAX){
+        delta_pulses -= UINT32_RANGE;
+    } else if(delta_pulses < INT32_MIN){
+        delta_pulses += UINT32_RANGE;
     }
-    cnt_old[obj_num] = cnt[obj_num];
-    return delta;
+    cnt_old[obj_num] = cnt_new;
 }

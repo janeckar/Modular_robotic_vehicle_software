@@ -7,7 +7,7 @@
 #include <iostream>
 #include <wiringPi.h>
 #include <signal.h>
-#include <motor_hat.h>
+#include <morve_hardware_drivers/MotorHat_Adafruit/motor_hat.h>
 
 using namespace std;
 

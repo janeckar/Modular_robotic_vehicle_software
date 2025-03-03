@@ -8,6 +8,14 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 
+# lib hardware_error
+add_library(hardware_error INTERFACE)
+target_include_directories(hardware_error
+  INTERFACE
+    #"<$BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+    "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
+    )
+
 # lib Encoder
 add_library(Encoder src/Encoder/Encoder.cpp)
 target_include_directories(Encoder
@@ -15,7 +23,7 @@ target_include_directories(Encoder
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
     "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
     )
-target_link_libraries(Encoder INTERFACE wiringPi)
+target_link_libraries(Encoder INTERFACE wiringPi hardware_error)
 
 # lib SpecializedEncoder
 add_library(SpecializedEncoder src/Encoder/SpecializedEncoder.cpp)
@@ -30,6 +38,7 @@ target_include_directories(tb6612fng
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
     "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
     )
+target_link_libraries(tb6612fng PUBLIC wiringPi)
 target_sources(MotorHat_Adafruit PRIVATE src/MotorHat_Adafruit/motor_hat.cpp)
 target_link_libraries(MotorHat_Adafruit PUBLIC tb6612fng)
 
@@ -46,6 +55,9 @@ target_include_directories(Sonar
 add_executable(test_encoder test/test_encoder.cpp)
 target_link_libraries(test_encoder PUBLIC SpecializedEncoder)
 
+add_executable(test_motor_hat test/test_motor_hat.cpp)
+target_link_libraries(test_motor_hat PUBLIC MotorHat_Adafruit)
+
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -59,10 +71,7 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
-# executable install
-set(CMAKE_INSTALL_GROUP "gpio")
-
-install(TARGETS test_encoder
+install(TARGETS test_encoder test_motor_hat
   DESTINATION lib/${PROJECT_NAME}
 )
 
@@ -72,7 +81,7 @@ install(
   DESTINATION include/${PROJECT_NAME}
 )
 
-install(TARGETS Encoder SpecializedEncoder tb6612fng MotorHat_Adafruit Sonar
+install(TARGETS Encoder SpecializedEncoder tb6612fng MotorHat_Adafruit Sonar hardware_error
   EXPORT export_${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
@@ -80,6 +89,6 @@ install(TARGETS Encoder SpecializedEncoder tb6612fng MotorHat_Adafruit Sonar
 )
 
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
-ament_export_dependencies(wiringPi)
+ament_export_dependencies(wiringpi)
 
 ament_package()

@@ -1,0 +1,4 @@
+# here add new dependencies
+wiringpi:
+  ubuntu: [libwiringpi-dev]
+  debian: [libwiringpi-dev]
