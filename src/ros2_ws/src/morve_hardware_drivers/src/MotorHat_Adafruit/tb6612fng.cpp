@@ -79,3 +79,7 @@ void TB6612FNG_I2C::coast(){
     pwmModule.Turn_off_led(in1_pin);
     pwmModule.Turn_off_led(in2_pin);
 }
+
+void TB6612FNG_I2C::clear_all_pwm_outputs(){
+    pwmModule.Clear_all_pwm();
+}

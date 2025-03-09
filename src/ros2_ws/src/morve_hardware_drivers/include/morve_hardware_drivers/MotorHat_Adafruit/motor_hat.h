@@ -8,7 +8,9 @@
 #ifndef MOTOR_HAT_H
 #define MOTOR_HAT_H
 
+#include <array>
 #include "tb6612fng.h"
+
 
 class motor_hat{
   private:
@@ -24,11 +26,9 @@ class motor_hat{
     static const int PWM_M4 = 7;
     static const int IN1_M4 = 5;
     static const int IN2_M4 = 6;
+
   public:
-    TB6612FNG_I2C motor1;
-    TB6612FNG_I2C motor2;
-    TB6612FNG_I2C motor3;
-    TB6612FNG_I2C motor4;
+    std::array<TB6612FNG_I2C, 4> motors;
 
     /**
      * @par address I2C address of PCA9685 on motor HAT

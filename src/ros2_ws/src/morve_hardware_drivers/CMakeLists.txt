@@ -17,7 +17,7 @@ target_include_directories(hardware_error
     )
 
 # lib Encoder
-add_library(Encoder src/Encoder/Encoder.cpp)
+add_library(Encoder SHARED src/Encoder/Encoder.cpp)
 target_include_directories(Encoder
   PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
@@ -26,24 +26,25 @@ target_include_directories(Encoder
 target_link_libraries(Encoder INTERFACE wiringPi hardware_error)
 
 # lib SpecializedEncoder
-add_library(SpecializedEncoder src/Encoder/SpecializedEncoder.cpp)
+add_library(SpecializedEncoder SHARED src/Encoder/SpecializedEncoder.cpp)
 target_link_libraries(SpecializedEncoder PUBLIC Encoder)
 target_compile_features(SpecializedEncoder PUBLIC cxx_std_20)
 
 # lib motor_hat, tb6612fng
-add_library(MotorHat_Adafruit)
-add_library(tb6612fng src/MotorHat_Adafruit/tb6612fng.cpp src/MotorHat_Adafruit/pca9685.cpp)
+add_library(MotorHat_Adafruit SHARED)
+add_library(tb6612fng SHARED src/MotorHat_Adafruit/tb6612fng.cpp src/MotorHat_Adafruit/pca9685.cpp)
 target_include_directories(tb6612fng
   PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
     "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
     )
 target_link_libraries(tb6612fng PUBLIC wiringPi)
+target_compile_features(tb6612fng PUBLIC cxx_std_20)
 target_sources(MotorHat_Adafruit PRIVATE src/MotorHat_Adafruit/motor_hat.cpp)
 target_link_libraries(MotorHat_Adafruit PUBLIC tb6612fng)
 
 # lib Sonar
-add_library(Sonar src/Sonar/HC_SR04.cpp)
+add_library(Sonar SHARED src/Sonar/HC_SR04.cpp)
 target_include_directories(Sonar
   PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
@@ -89,6 +90,6 @@ install(TARGETS Encoder SpecializedEncoder tb6612fng MotorHat_Adafruit Sonar har
 )
 
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
-ament_export_dependencies(wiringpi)
+ament_export_dependencies()
 
 ament_package()

@@ -48,7 +48,7 @@ double HC_SR04::Distance(int timeout)
   delay(10);
   SendTrigger();
 
-  delay(20); // 20 ms so the ultrasound has time to travel back
+  delay(20 + timeout); // 20 ms so the ultrasound has time to travel back
 
   //distanceMeters = 100*((travelTimeUsec/1000000.0)*340.29)/2;
   distance_cm = travelTimeUsec * 340.29 / 20000;
@@ -59,7 +59,7 @@ double HC_SR04::Distance(int timeout)
 long long HC_SR04::MeassureSensorTimeout(int timeout_ms){
   delay(10);
   SendTrigger();
-  delay(timeout_ms);
+  delay(20 + timeout_ms);
 
   return travelTimeUsec;
 }

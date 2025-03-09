@@ -1,0 +1,13 @@
+<library path="morve_hardware_interfaces">
+  <class name="morve_hardware_interfaces/motor_interface"
+         type="morve_hardware_interfaces::motor_interface"
+         base_class_type="hardware_interface::SystemInterface">
+    <description>
+      The ros2_control hardware interface for motor with encoder using Adafruit DC motor Hat.
+      MoRVE is using a system hardware interface-type. It uses effort command as (pwm) and velocity state interface.
+      This hardware interface gives opportunity to make robot with two or four wheels.
+      It is possible to use Differential drive controller or Omnidirectional conntroller.
+      Each wheel needs to be first connected to PID controller via ros2_control framework.
+    </description>
+  </class>
+</library>

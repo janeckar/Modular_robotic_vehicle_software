@@ -7,9 +7,35 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-#find_package(hardware_interface REQUIRED)
+find_package(hardware_interface REQUIRED)
+find_package(pluginlib REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(rclcpp_lifecycle REQUIRED)
+find_package(morve_hardware_drivers REQUIRED)
+
+# add shared library
+add_library(morve_hardware_interfaces SHARED src/motor_interface.cpp)
+target_include_directories(morve_hardware_interfaces
+  PUBLIC
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+    "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
+    )
+target_compile_features(morve_hardware_interfaces PUBLIC cxx_std_11)
+ament_target_dependencies(morve_hardware_interfaces
+  hardware_interface
+  pluginlib
+  rclcpp
+  rclcpp_lifecycle 
+  morve_hardware_drivers
+)
+pluginlib_export_plugin_description_file(hardware_interface
+  morve_hardware_interfaces.xml)
+
+
+add_executable(test_stoi_hex src/test_stoi_hex.cpp)
+target_compile_features(test_stoi_hex PUBLIC cxx_std_20)
+
+
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -23,8 +49,24 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+# executables install
+install(TARGETS test_stoi_hex
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+# library install
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION include
 )
+
+install(TARGETS morve_hardware_interfaces
+  EXPORT export_${PROJECT_NAME}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+
+ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
+ament_export_dependencies(morve_hardware_drivers)
 
 ament_package()

@@ -12,12 +12,13 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <format>
 #include "morve_hardware_drivers/MotorHat_Adafruit/pca9685.h"
 
 pca9685::pca9685(int i2c_addr){
     device_fd = wiringPiI2CSetup(i2c_addr); // connect to pca9685
     if(device_fd < 0){
-        const auto msg = "Could not open the i2c device on address " + std::to_string(i2c_addr) + "\n";
+        const auto msg = std::format("Could not open i2c device on address {:x}.", i2c_addr);
         throw std::system_error{errno, std::system_category(), msg};
     }
     int res = wiringPiI2CWriteReg8(device_fd, MODE2, OUTDRV); // setting with no pull up resistor

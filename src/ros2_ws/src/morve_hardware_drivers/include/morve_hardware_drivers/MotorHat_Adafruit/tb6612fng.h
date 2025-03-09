@@ -71,6 +71,8 @@ class TB6612FNG_I2C {
      * @brief stop mode from tb6612fng datasheet
      */
     void coast();
+
+    void clear_all_pwm_outputs();
 };
 
 #endif // TB6612FNG_H

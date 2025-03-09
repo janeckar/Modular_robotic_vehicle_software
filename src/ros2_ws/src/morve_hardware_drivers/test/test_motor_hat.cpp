@@ -19,7 +19,7 @@ void signal_callback_handler(int signum) {
     wasSigint = true;
 }
 
-int main(int argc, char** args){
+int main(int /*argc*/, char** /*args*/){
     // Setups the WiringPi to use Broadcom pinout (in compliance with raspberry pi Gpio pins)
     if (wiringPiSetupGpio() == -1)
         return -1;
@@ -29,32 +29,31 @@ int main(int argc, char** args){
     motor_hat motorhat(MOTOR_HAT_ADDR);
 
     for(int i = 500; i <= 1000 && !wasSigint; i++){
-        motorhat.motor1.set_power(i);
-        motorhat.motor2.set_power(i);
-        motorhat.motor3.set_power(i);
-        motorhat.motor4.set_power(i);
+        for(uint32_t motor = 0; motor < motorhat.motors.size(); motor++){
+            motorhat.motors[motor].set_power(i);
+        }
         delay(1);
     }
     
-    motorhat.motor1.coast();
-    motorhat.motor2.coast();
-    motorhat.motor3.coast();
-    motorhat.motor4.coast();
+    // set coast
+    for(uint32_t motor = 0; motor < motorhat.motors.size(); motor++){
+        motorhat.motors[motor].coast();
+    }
+    
     for(int i = 0; i < 1000 && !wasSigint; i++)
         delay(1);
 
     for(int i = -500; i >= -1000 && !wasSigint; i--){
-        motorhat.motor1.set_power(i);
-        motorhat.motor2.set_power(i);
-        motorhat.motor3.set_power(i);
-        motorhat.motor4.set_power(i);
+        for(uint32_t motor = 0; motor < motorhat.motors.size(); motor++){
+            motorhat.motors[motor].set_power(i);
+        }
         delay(1);
     }
 
-    motorhat.motor1.coast();
-    motorhat.motor2.coast();
-    motorhat.motor3.coast();
-    motorhat.motor4.coast();
+    for(uint32_t motor = 0; motor < motorhat.motors.size(); motor++){
+        motorhat.motors[motor].coast();
+    }
+
     for(int i = 0; i < 1000 && !wasSigint; i++)
         delay(1);
 
