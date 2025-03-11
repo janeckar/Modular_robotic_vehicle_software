@@ -27,6 +27,9 @@ install(DIRECTORY description
   DESTINATION share/${PROJECT_NAME}
 )
 
+install(DIRECTORY config
+  DESTINATION share/${PROJECT_NAME})
+
 # Install launch files
 install(DIRECTORY
   launch

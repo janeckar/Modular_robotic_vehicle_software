@@ -54,6 +54,16 @@ def generate_launch_description():
     )
     robot_description = {"robot_description": robot_description_content}
     
+    rviz_config_file = PathJoinSubstitution(
+        [FindPackageShare(description_package), "config", "morve_config.rviz"]
+    )
+    
+    joint_state_pub_node = Node(
+        package="joint_state_publisher_gui",
+        executable="joint_state_publisher_gui",
+        output="both",
+    )
+    
     robot_state_pub_node = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
@@ -61,8 +71,18 @@ def generate_launch_description():
         parameters=[robot_description],
     )
     
+    rviz_node = Node(
+        package="rviz2",
+        executable="rviz2",
+        name="rviz",
+        output="log",
+        arguments=["-d", rviz_config_file]
+    )
+    
     nodes = [
+        joint_state_pub_node,
         robot_state_pub_node,
+        rviz_node,
     ]
     
     return LaunchDescription(declared_arguments + nodes)
