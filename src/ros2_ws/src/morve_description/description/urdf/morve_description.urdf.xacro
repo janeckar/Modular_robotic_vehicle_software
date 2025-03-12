@@ -46,6 +46,23 @@
         </visual>
     </link>
 
+    <!-- Test of inserting mesh of sonar holder to urdf -->
+    <joint name="${prefix}front_sonar_holder_joint" type="fixed">
+        <parent link="${prefix}base_link"/>
+        <child link="${prefix}front_sonar_holder"/>
+        <origin xyz="0.0 ${-base_length/2} ${z_offset}" rpy="0.0 0.0 0.0"/>
+    </joint>
+    
+    <link name="${prefix}front_sonar_holder">
+        <visual>
+            <origin xyz="-0.025 0.0 0.0" rpy="0.0 0.0 0.0"/>
+            <geometry>
+                <mesh filename="package://morve_description/description/meshes/HC_SR04_2021_holder.stl" scale="0.001 0.001 0.001"/>
+            </geometry>
+            <material name="blue"/>
+        </visual>
+    </link>
+
     </xacro:macro>
     
 </robot>

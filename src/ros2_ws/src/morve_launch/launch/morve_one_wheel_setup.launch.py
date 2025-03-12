@@ -12,7 +12,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "description_package",
-            default_value="morve_launch",
+            default_value="morve_description",
             description="Description package with robot URDF/xacro files. \
                 This argument enables use of a custom description"
         )
@@ -45,7 +45,7 @@ def generate_launch_description():
             PathJoinSubstitution([FindExecutable(name="xacro")]),
             " ",
             PathJoinSubstitution(
-                [FindPackageShare(description_package), "description", description_file]
+                [FindPackageShare(description_package), "description/urdf", description_file]
             ),
             " ",
             "prefix:=",
@@ -55,7 +55,7 @@ def generate_launch_description():
     robot_description = {"robot_description": robot_description_content}
     
     rviz_config_file = PathJoinSubstitution(
-        [FindPackageShare(description_package), "config", "morve_config.rviz"]
+        [FindPackageShare(description_package), "description/rviz", "morve_view.rviz"]
     )
     
     joint_state_pub_node = Node(
