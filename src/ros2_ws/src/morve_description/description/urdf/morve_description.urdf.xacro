@@ -20,17 +20,17 @@
     </xacro:macro>
 
     <!-- Macro for Sonar holder -->
-    <xacro:macro name="sonar_holder" params="name prefix parent_link joint_x joint_y joint_z joint_yaw">
+    <xacro:macro name="sonar_holder" params="prefix parent_link joint_x joint_y joint_z joint_yaw">
         <!-- Include constants -->
         <xacro:morve_constants />
 
-        <joint name="${prefix}${name}_joint" type="fixed">
-            <parent link="${prefix}${parent_link}"/>
-            <child link="${prefix}${name}"/>
+        <joint name="${prefix}_sonar_holder_joint" type="fixed">
+            <parent link="${parent_link}"/>
+            <child link="${prefix}_sonar_holder"/>
             <origin xyz="${joint_x} ${joint_y} ${joint_z}" rpy="0.0 0.0 ${joint_yaw}"/>
         </joint>
         
-        <link name="${prefix}${name}">
+        <link name="${prefix}_sonar_holder">
             <visual>
                 <origin xyz="-0.025 0.0 0.0" rpy="0.0 0.0 0.0"/>
                 <geometry>
@@ -42,23 +42,23 @@
     </xacro:macro>
     
     <!-- Macro for wheel -->
-    <xacro:macro name="robotic_wheel" params="name prefix parent_link joint_x joint_y joint_z">
+    <xacro:macro name="robotic_wheel" params="prefix parent_link rear left">
         <!-- Include constants -->
         <xacro:morve_constants />
         
-        <joint name="${name}_joint" type="continuous">
-            <parent link="${prefix}${parent_link}"/>
-            <child link="${prefix}${name}"/>
+        <joint name="${prefix}_wheel_joint" type="continuous">
+            <parent link="${parent_link}"/>
+            <child link="${prefix}_wheel"/>
             <axis xyz="0 0 1"/>
-            <origin xyz="${joint_x} ${joint_y} ${joint_z}" rpy="0 ${PI/2} 0"/>
+            <origin xyz="${left*track_width_half} ${rear*wheel_base_half} ${z_offset}" rpy="0 ${PI/2} 0"/>
         </joint>
     
-        <link name="${prefix}${name}">
+        <link name="${prefix}_wheel">
             <visual>
                 <geometry>
                     <cylinder radius="${wheel_radius}" length="${wheel_length}"/>
                 </geometry>
-                <material name="green"/>    
+                <material name="green"/>
             </visual>
         </link>
     </xacro:macro>
@@ -80,26 +80,26 @@
         </link>
         
         <!-- Instantiation of robotic wheels -->
-        <xacro:robotic_wheel name="front_left_wheel" prefix="${prefix}" parent_link="base_link"
-                            joint_x="${track_width_half}" joint_y="${-wheel_base_half}" joint_z="${z_offset}"/>
+        <xacro:robotic_wheel prefix="${prefix}front_left" parent_link="${prefix}base_link"
+                             rear="-1" left="1" />
 
-        <xacro:robotic_wheel name="rear_left_wheel" prefix="${prefix}" parent_link="base_link"
-                            joint_x="${track_width_half}" joint_y="${wheel_base_half}" joint_z="${z_offset}"/>
+        <xacro:robotic_wheel prefix="${prefix}rear_left" parent_link="${prefix}base_link"
+                             rear="1" left="1" />
 
-        <xacro:robotic_wheel name="front_right_wheel" prefix="${prefix}" parent_link="base_link"
-                            joint_x="${-track_width_half}" joint_y="${-wheel_base_half}" joint_z="${z_offset}"/>
+        <xacro:robotic_wheel prefix="${prefix}front_right" parent_link="${prefix}base_link"
+                             rear="-1" left="-1" />
 
-        <xacro:robotic_wheel name="rear_right_wheel" prefix="${prefix}" parent_link="base_link"
-                            joint_x="${-track_width_half}" joint_y="${wheel_base_half}" joint_z="${z_offset}"/>
+        <xacro:robotic_wheel prefix="${prefix}rear_right" parent_link="${prefix}base_link"
+                             rear="1" left="-1" />
 
         <!-- Instantiation of sonar holders -->
-        <xacro:sonar_holder name="front_sonar_holder" prefix="${prefix}" parent_link="base_link"
+        <xacro:sonar_holder prefix="${prefix}front" parent_link="${prefix}base_link"
                             joint_x="0.0" joint_y="${-base_length/2}" joint_z="${z_offset}" joint_yaw="0.0"/>
 
-        <xacro:sonar_holder name="left_side_sonar_holder" prefix="${prefix}" parent_link="base_link"
+        <xacro:sonar_holder prefix="${prefix}left_side" parent_link="${prefix}base_link"
                             joint_x="${base_width/2}" joint_y="0.0" joint_z="${z_offset}" joint_yaw="${PI/2}"/>
 
-        <xacro:sonar_holder name="right_side_sonar_holder" prefix="${prefix}" parent_link="base_link"
+        <xacro:sonar_holder prefix="${prefix}right_side" parent_link="${prefix}base_link"
                             joint_x="${-base_width/2}" joint_y="0.0" joint_z="${z_offset}" joint_yaw="${-PI/2}"/>
     </xacro:macro>
 </robot>
