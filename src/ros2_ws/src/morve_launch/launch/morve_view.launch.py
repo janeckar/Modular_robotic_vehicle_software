@@ -26,8 +26,15 @@ def generate_launch_description():
     )
     declared_arguments.append(
         DeclareLaunchArgument(
+            "gui",
+            default_value="true",
+            description="Start Rviz2 and Joint state publisher gui automatically.",
+        )
+    )
+    declared_arguments.append(
+        DeclareLaunchArgument(
             "prefix",
-            default_value='""',
+            default_value="",
             description="Prefix of the joint names, useful for \
                 multi-robot setup. If changed than also joint names in controllers configuration \
                 needs to be updated."
@@ -37,6 +44,7 @@ def generate_launch_description():
     # initialize arguments
     description_package = LaunchConfiguration("description_package")
     description_file = LaunchConfiguration("description_file")
+    gui = LaunchConfiguration("gui")
     prefix = LaunchConfiguration("prefix")
     
     # get URDF file with use of xacro
@@ -62,6 +70,8 @@ def generate_launch_description():
         package="joint_state_publisher_gui",
         executable="joint_state_publisher_gui",
         output="both",
+        namespace=prefix,
+        condition=IfCondition(gui),
     )
     
     robot_state_pub_node = Node(
@@ -69,6 +79,7 @@ def generate_launch_description():
         executable="robot_state_publisher",
         output="both",
         parameters=[robot_description],
+        namespace=prefix,
     )
     
     rviz_node = Node(
@@ -76,7 +87,8 @@ def generate_launch_description():
         executable="rviz2",
         name="rviz",
         output="log",
-        arguments=["-d", rviz_config_file]
+        arguments=["-d", rviz_config_file],
+        condition=IfCondition(gui),
     )
     
     nodes = [
