@@ -11,47 +11,12 @@
 #include <memory>
 
 #include "morve_hardware_interfaces/motor_interface.hpp"
+#include "morve_hardware_interfaces/parsing_functions.hpp"
+#include "wiringPi.h" // some problems with compiling if the wiringPi include is before morve_hardware_interfaces
 #include "rclcpp/rclcpp.hpp"
 
 namespace morve_hardware_interfaces
 {
-bool motor_interface::starts_with_ic(const std::string & substr, const std::string & str){
-  if(substr.length() > str.length()){
-    return false;
-  }
-
-  int substr_len = substr.length();
-
-  for(int sub_i = 0; sub_i < substr_len; sub_i++){
-    if(std::toupper(str.at(sub_i)) != std::toupper(substr.at(sub_i))){
-      break;
-    } else if(substr_len -1 == sub_i){
-      return true;
-    }
-  }
-
-  return false;
-}
-
-int motor_interface::parse_gpio(std::string gpio_str){
-  if(starts_with_ic(gpio_str, "gpio")){
-    gpio_str = gpio_str.substr(4);
-  }
-  // TODO check range of gpio
-  return std::stoi(gpio_str);
-}
-
-int motor_interface::parse_motor_num(std::string motor_mapping_str){
-  if(starts_with_ic(motor_mapping_str, "motor")){
-    motor_mapping_str = motor_mapping_str.substr(5);
-  }
-  // checks range of mapping
-  int motor_mapping = std::stoi(motor_mapping_str);
-  if(motor_mapping < 0 || motor_mapping > 3){
-    throw std::range_error("Motor hat output mapping number is not in range <0; 3>.");
-  }
-  return motor_mapping;
-}
 
 hardware_interface::CallbackReturn motor_interface::on_init(
   const hardware_interface::HardwareInfo & hardware_info) 
@@ -66,7 +31,7 @@ hardware_interface::CallbackReturn motor_interface::on_init(
   // then load parameters
   // i2c address of pca9685fng or motor hat
   try{
-    motor_hat_i2c_addr = std::stoi(info_.hardware_parameters["motor_hat_i2c_addr"], 0, 16);
+    motor_hat_i2c_addr = morve_hardware_interfaces::verbose_stoi(info_.hardware_parameters["motor_hat_i2c_addr"], 0, 16);
   } catch (const std::invalid_argument & e){
     RCLCPP_FATAL(
       get_logger(), "Parameter motor_hat_i2c_addr = '%s' is not a number in hex notation.", 
@@ -86,7 +51,7 @@ hardware_interface::CallbackReturn motor_interface::on_init(
   
   // which output to choose from the motor hat mapping
   try{
-    motor_output_mapping = parse_motor_num(joint.parameters["motor_hat_output_mapping"]);
+    motor_output_mapping = morve_hardware_interfaces::parse_motor_num(joint.parameters["motor_hat_output_mapping"]);
   } catch (const std::invalid_argument & e){
     RCLCPP_FATAL(get_logger(), e.what());
     return hardware_interface::CallbackReturn::ERROR;
@@ -97,9 +62,9 @@ hardware_interface::CallbackReturn motor_interface::on_init(
   
   // parameters for encoder
   try{
-    encoder_line_A_gpio_pin = parse_gpio(joint.parameters["encoder_line_A_gpio_pin"]);
-    encoder_line_B_gpio_pin = parse_gpio(joint.parameters["encoder_line_B_gpio_pin"]);
-    encoder_pulses_per_rotation = std::stoi(joint.parameters["encoder_pulses_per_rotation"]);
+    encoder_line_A_gpio_pin = morve_hardware_interfaces::parse_gpio(joint.parameters["encoder_line_A_gpio_pin"]);
+    encoder_line_B_gpio_pin = morve_hardware_interfaces::parse_gpio(joint.parameters["encoder_line_B_gpio_pin"]);
+    encoder_pulses_per_rotation = morve_hardware_interfaces::verbose_stoi(joint.parameters["encoder_pulses_per_rotation"]);
     wheel_diameter_metres = std::stod(joint.parameters["wheel_diameter_metres"]);
   } catch (std::invalid_argument & e){
     RCLCPP_FATAL(get_logger(), e.what());
@@ -156,6 +121,12 @@ hardware_interface::CallbackReturn motor_interface::on_configure(
 {
   RCLCPP_INFO(get_logger(), "Configuring motor and encoder hardware resources...");
   // configures hardware
+  if (int result = wiringPiSetupGpio() == -1){
+    std::string msg = "WiringPi setup failed with error code: " + std::to_string(result);
+    RCLCPP_FATAL(get_logger(), msg.c_str());
+    return hardware_interface::CallbackReturn::ERROR;
+  }
+  
   try{
   auto temp_motorhat = std::make_shared<motor_hat>(motor_hat_i2c_addr);
   auto temp_wheel_encoder = std::make_shared<SpecializedEncoder>(
@@ -173,12 +144,6 @@ hardware_interface::CallbackReturn motor_interface::on_configure(
   motorhat_->motors[0].clear_all_pwm_outputs();
   wheel_encoder_->ResetCounters();
 
-  // tohle budu muset zamenit, jinak by to takhle neslo
-  // reset values always when configuring hardware
-  for (const auto & [name, descr] : joint_state_interfaces_)
-  {
-    set_state(name, 0.0);
-  }
   for (const auto & [name, descr] : joint_command_interfaces_)
   {
     set_command(name, 0.0);
@@ -208,9 +173,10 @@ hardware_interface::CallbackReturn motor_interface::on_cleanup(
 hardware_interface::CallbackReturn motor_interface::on_activate(
   const rclcpp_lifecycle::State & /*pevious_state*/)
 {
-  RCLCPP_INFO(
-    get_logger(), "Activating wheel joint %s.",
-    joint_command_interfaces_.at(0).get_prefix_name().c_str());
+  for(auto [name, descr] : joint_command_interfaces_){
+    RCLCPP_INFO(
+      get_logger(), "Activating wheel joint %s.", name.c_str());
+  }
   motorhat_->motors[0].coast();
   wheel_encoder_->ResetCounters();
 
@@ -222,10 +188,10 @@ hardware_interface::CallbackReturn motor_interface::on_activate(
 hardware_interface::CallbackReturn motor_interface::on_deactivate(
   const rclcpp_lifecycle::State & /*pevious_state*/)
 {
-  RCLCPP_INFO(
-    get_logger(), "Deactivating wheel joint %s.",
-    joint_command_interfaces_.at(0).get_prefix_name().c_str());
-  
+  for(auto [name, descr] : joint_command_interfaces_){
+    RCLCPP_INFO(
+      get_logger(), "Deactivating wheel joint %s.", name.c_str());
+  }
   motorhat_->motors[0].clear_all_pwm_outputs(); //TODO replace only with clearing one output
   wheel_encoder_->ResetCounters(); // needs to be reprogramed to be eble to switch off the interrupt of encoder
   

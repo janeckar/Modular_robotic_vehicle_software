@@ -62,7 +62,6 @@ TB6612FNG_I2C::~TB6612FNG_I2C() = default;
 
 void TB6612FNG_I2C::set_power(int power){
     power = std::clamp(power, -PWM_RESOLUTION, PWM_RESOLUTION);
-    std::cout << "duty_cycle: " << power << std::endl;
     
     pwmModule.Write_pwm_led(pwm_pin, 0, std::abs(power)); // TODO maybe add parameter for rising edge time
     if(power < 0){

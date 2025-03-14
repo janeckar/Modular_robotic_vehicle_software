@@ -9,7 +9,7 @@
         <param name="motor_hat_i2c_addr">0x60</param>
       </hardware>
 
-      <joint name="${prefix}front_left_motor">
+      <joint name="${prefix}front_left_wheel_joint">
         <param name="motor_hat_output_mapping">motor0</param>
         <param name="encoder_line_A_gpio_pin">gpio7</param>
         <param name="encoder_line_B_gpio_pin">gpio5</param>
