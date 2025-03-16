@@ -1,6 +1,7 @@
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, RegisterEventHandler
 from launch.conditions import IfCondition
+from launch.event_handlers import OnProcessExit
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
 
 from launch_ros.actions import Node
@@ -102,14 +103,44 @@ def generate_launch_description():
     joint_state_broadcaster_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["joint_state_broadcaster"],
+        arguments=["joint_state_broadcaster",],
     )
+    
+    PWM_pid_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=[
+            "pwm_pid_controller",
+            "--param-file",
+            robot_controllers,
+            #"--controller-ros-args",
+            #"-r /diffbot_base_controller/cmd_vel:=/cmd_vel",
+        ],
+    )
+    
+    # Delay rviz start after `joint_state_broadcaster`
+    # delay_rviz_after_joint_state_broadcaster_spawner = RegisterEventHandler(
+    #     event_handler=OnProcessExit(
+    #         target_action=joint_state_broadcaster_spawner,
+    #         on_exit=[rviz_node],
+    #     )
+    # )
+    
+    # delay_joint_state_broadcaster_after_PWM_controller_spawner = RegisterEventHandler(
+    #     event_handler=OnProcessExit(
+    #         target_action=PWM_pid_controller_spawner,
+    #         on_exit=[joint_state_broadcaster_spawner],
+    #     )
+    # )
     
     nodes = [
         control_node,
         robot_state_pub_node,
-        rviz_node,
+        PWM_pid_controller_spawner,
+        # delay_joint_state_broadcaster_after_PWM_controller_spawner,
+        # delay_rviz_after_joint_state_broadcaster_spawner,
         joint_state_broadcaster_spawner,
+        rviz_node,
     ]
     
     return LaunchDescription(declared_arguments + nodes)

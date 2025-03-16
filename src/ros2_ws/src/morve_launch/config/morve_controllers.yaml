@@ -1,6 +1,20 @@
 controller_manager:
   ros__parameters:
-    update_rate: 10  # Hz
+    update_rate: 50  # Hz
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
+
+pwm_pid_controller:
+  ros__parameters:
+    type: pid_controller/PidController
+
+    dof_names:
+      - front_left_wheel_joint
+    
+    command_interface: effort
+
+    reference_and_state_interfaces: ["velocity"]
+
+    gains:
+      front_left_wheel_joint: {p: 1.0, i: 2.0, d: 3.0, i_clamp_max: 5.0, i_clamp_min: -5.0}
