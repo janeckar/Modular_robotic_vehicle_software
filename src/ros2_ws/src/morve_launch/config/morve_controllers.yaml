@@ -17,4 +17,4 @@ pwm_pid_controller:
     reference_and_state_interfaces: ["velocity"]
 
     gains:
-      front_left_wheel_joint: {p: 1.0, i: 2.0, d: 3.0, i_clamp_max: 5.0, i_clamp_min: -5.0}
+      front_left_wheel_joint: {p: 0.0001, i: 10.0, d: 0.0001, i_clamp_max: 3.5, i_clamp_min: -3.5}

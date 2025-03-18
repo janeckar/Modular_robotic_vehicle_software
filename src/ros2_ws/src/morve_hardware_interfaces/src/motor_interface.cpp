@@ -239,7 +239,7 @@ hardware_interface::return_type motor_interface::write(
   for(const auto & [name, descr] : joint_command_interfaces_)
   {
     if(descr.get_interface_name() == hardware_interface::HW_IF_EFFORT){
-      int pwm = static_cast<int>(get_command(name));
+      int pwm = static_cast<int>(get_command(name) * 1000);
       motorhat_->motors[motor_output_mapping].set_power(pwm);
     }
   }
