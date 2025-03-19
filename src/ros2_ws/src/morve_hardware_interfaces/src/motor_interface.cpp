@@ -43,74 +43,74 @@ hardware_interface::CallbackReturn motor_interface::on_init(
   }
 
   // load joint info
-  if(info_.joints.size() != 1){
-    RCLCPP_ERROR(get_logger(), "Only one joint was expected but got %ld.", info_.joints.size());
-    return hardware_interface::CallbackReturn::ERROR;
-  }
-  auto joint = info_.joints.at(0);
-  
-  // which output to choose from the motor hat mapping
-  try{
-    motor_output_mapping = morve_hardware_interfaces::parse_motor_num(joint.parameters["motor_hat_output_mapping"]);
-  } catch (const std::invalid_argument & e){
-    RCLCPP_FATAL(get_logger(), e.what());
-    return hardware_interface::CallbackReturn::ERROR;
-  } catch(const std::range_error & e){
-    RCLCPP_FATAL(get_logger(), e.what());
-    return hardware_interface::CallbackReturn::ERROR;
-  }
-  
-  // parameters for encoder
-  try{
-    encoder_line_A_gpio_pin = morve_hardware_interfaces::parse_gpio(joint.parameters["encoder_line_A_gpio_pin"]);
-    encoder_line_B_gpio_pin = morve_hardware_interfaces::parse_gpio(joint.parameters["encoder_line_B_gpio_pin"]);
-    encoder_pulses_per_rotation = morve_hardware_interfaces::verbose_stoi(joint.parameters["encoder_pulses_per_rotation"]);
-    wheel_diameter_metres = std::stod(joint.parameters["wheel_diameter_metres"]);
-  } catch (std::invalid_argument & e){
-    RCLCPP_FATAL(get_logger(), e.what());
-    return hardware_interface::CallbackReturn::ERROR;
-  } catch (std::range_error & e){
-    RCLCPP_FATAL(get_logger(), e.what());
+  if(info_.joints.size() == 0 || info_.joints.size() > 4){
+    RCLCPP_ERROR(get_logger(), "Expects one to four joints but got %ld.", info_.joints.size());
     return hardware_interface::CallbackReturn::ERROR;
   }
 
-  // command interface
-  if(joint.command_interfaces.size() != 1){
-    RCLCPP_ERROR(get_logger(), "Joint '%s' have %zu command interfaces. 1 expected.",
-      joint.name.c_str(), joint.command_interfaces.size());
-    return hardware_interface::CallbackReturn::ERROR;
-  }
+  for(auto joint : info_.joints){
+    // which output to choose from the motor hat mapping
+    try{
+      motor_output_mappings[joint.name] = morve_hardware_interfaces::parse_motor_num(joint.parameters["motor_hat_output_mapping"]);
+    } catch (const std::invalid_argument & e){
+      RCLCPP_FATAL(get_logger(), e.what());
+      return hardware_interface::CallbackReturn::ERROR;
+    } catch(const std::range_error & e){
+      RCLCPP_FATAL(get_logger(), e.what());
+      return hardware_interface::CallbackReturn::ERROR;
+    }
+    
+    // parameters for encoder
+    try{
+      encoder_line_A_gpio_pins[joint.name] = morve_hardware_interfaces::parse_gpio(joint.parameters["encoder_line_A_gpio_pin"]);
+      encoder_line_B_gpio_pins[joint.name] = morve_hardware_interfaces::parse_gpio(joint.parameters["encoder_line_B_gpio_pin"]);
+      encoder_pulses_per_rotation[joint.name] = morve_hardware_interfaces::verbose_stoi(joint.parameters["encoder_pulses_per_rotation"]);
+      wheel_diameter_metres[joint.name] = std::stod(joint.parameters["wheel_diameter_metres"]);
+    } catch (std::invalid_argument & e){
+      RCLCPP_FATAL(get_logger(), e.what());
+      return hardware_interface::CallbackReturn::ERROR;
+    } catch (std::range_error & e){
+      RCLCPP_FATAL(get_logger(), e.what());
+      return hardware_interface::CallbackReturn::ERROR;
+    }
 
-  if(joint.command_interfaces[0].name != hardware_interface::HW_IF_EFFORT){
-    RCLCPP_ERROR(
-      get_logger(), "Joint '%s' has '%s' as command interface. '%s' expected",
-      joint.name.c_str(), joint.command_interfaces[0].name.c_str(),
-      hardware_interface::HW_IF_EFFORT);
-    return hardware_interface::CallbackReturn::ERROR;
-  }
+    // command interface
+    if(joint.command_interfaces.size() != 1){
+      RCLCPP_ERROR(get_logger(), "Joint '%s' have %zu command interfaces. 1 expected.",
+        joint.name.c_str(), joint.command_interfaces.size());
+      return hardware_interface::CallbackReturn::ERROR;
+    }
 
-  if(joint.command_interfaces[0].max == "" || joint.command_interfaces[0].min == ""){
-    RCLCPP_ERROR(
-      get_logger(), "Joint '%s' has '%s' command_interface with no maximum or minimum set.",
-      joint.name.c_str(), joint.command_interfaces[0].name.c_str());
-    return hardware_interface::CallbackReturn::ERROR;
-  }
+    if(joint.command_interfaces[0].name != hardware_interface::HW_IF_EFFORT){
+      RCLCPP_ERROR(
+        get_logger(), "Joint '%s' has '%s' as command interface. '%s' expected",
+        joint.name.c_str(), joint.command_interfaces[0].name.c_str(),
+        hardware_interface::HW_IF_EFFORT);
+      return hardware_interface::CallbackReturn::ERROR;
+    }
 
-  // state interface
-  if(joint.state_interfaces.size() != 1){
-    RCLCPP_ERROR(get_logger(), "Joint '%s' have %zu state interfaces. 1 expected.",
-      joint.name.c_str(), joint.state_interfaces.size());
-    return hardware_interface::CallbackReturn::ERROR;
-  }
+    if(joint.command_interfaces[0].max == "" || joint.command_interfaces[0].min == ""){
+      RCLCPP_ERROR(
+        get_logger(), "Joint '%s' has '%s' command_interface with no maximum or minimum set.",
+        joint.name.c_str(), joint.command_interfaces[0].name.c_str());
+      return hardware_interface::CallbackReturn::ERROR;
+    }
 
-  if(joint.state_interfaces[0].name != hardware_interface::HW_IF_VELOCITY){
-    RCLCPP_ERROR(
-      get_logger(), "Joint '%s' has '%s' as state interface. '%s' expected",
-      joint.name.c_str(), joint.command_interfaces[0].name.c_str(),
-      hardware_interface::HW_IF_VELOCITY);
-    return hardware_interface::CallbackReturn::ERROR;
-  }
+    // state interface
+    if(joint.state_interfaces.size() != 1){
+      RCLCPP_ERROR(get_logger(), "Joint '%s' have %zu state interfaces. 1 expected.",
+        joint.name.c_str(), joint.state_interfaces.size());
+      return hardware_interface::CallbackReturn::ERROR;
+    }
 
+    if(joint.state_interfaces[0].name != hardware_interface::HW_IF_VELOCITY){
+      RCLCPP_ERROR(
+        get_logger(), "Joint '%s' has '%s' as state interface. '%s' expected",
+        joint.name.c_str(), joint.command_interfaces[0].name.c_str(),
+        hardware_interface::HW_IF_VELOCITY);
+      return hardware_interface::CallbackReturn::ERROR;
+    }
+  }
   // option to disable the encoder state interfaces from option
 
   return hardware_interface::CallbackReturn::SUCCESS;
@@ -128,12 +128,15 @@ hardware_interface::CallbackReturn motor_interface::on_configure(
   }
   
   try{
-  auto temp_motorhat = std::make_shared<motor_hat>(motor_hat_i2c_addr);
-  auto temp_wheel_encoder = std::make_shared<SpecializedEncoder>(
-    encoder_line_A_gpio_pin, encoder_line_B_gpio_pin, encoder_pulses_per_rotation,
-    wheel_diameter_metres);
-  motorhat_ = std::move(temp_motorhat);
-  wheel_encoder_ = std::move(temp_wheel_encoder);
+    auto temp_motorhat = std::make_shared<motor_hat>(motor_hat_i2c_addr);
+    for(auto joint : info_.joints){
+      auto temp_wheel_encoder = std::make_shared<SpecializedEncoder>(
+        encoder_line_A_gpio_pins[joint.name], encoder_line_B_gpio_pins[joint.name], encoder_pulses_per_rotation[joint.name],
+        wheel_diameter_metres[joint.name]);
+      
+      wheel_encoders_[joint.name] = std::move(temp_wheel_encoder);
+    }
+    motorhat_ = std::move(temp_motorhat);
   } catch (const std::system_error & e) {
     RCLCPP_ERROR(get_logger(), e.what());
     return hardware_interface::CallbackReturn::ERROR;
@@ -141,8 +144,11 @@ hardware_interface::CallbackReturn motor_interface::on_configure(
     RCLCPP_ERROR(get_logger(), e.what());
     return hardware_interface::CallbackReturn::ERROR;
   }
+  
   motorhat_->motors[0].clear_all_pwm_outputs();
-  wheel_encoder_->ResetCounters();
+  for(auto joint : info_.joints){
+    wheel_encoders_[joint.name]->ResetCounters();
+  }
 
   for (const auto & [name, descr] : joint_command_interfaces_)
   {
@@ -162,9 +168,11 @@ hardware_interface::CallbackReturn motor_interface::on_cleanup(
   motorhat_ = nullptr;
 
   // TODO rewrite the Specialized Encoder to use gpiod for interrupts so the interrupts can be deactivated
-  // cannot be restarted
-  wheel_encoder_->~SpecializedEncoder();
-  wheel_encoder_ = nullptr;
+  // to be restarted it must be turned off
+  for(auto joint : info_.joints){
+    wheel_encoders_[joint.name]->~SpecializedEncoder();
+    wheel_encoders_[joint.name] = nullptr;
+  }
   RCLCPP_INFO(get_logger(), "Successfullly cleaned!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
@@ -177,8 +185,11 @@ hardware_interface::CallbackReturn motor_interface::on_activate(
     RCLCPP_INFO(
       get_logger(), "Activating wheel joint %s.", name.c_str());
   }
-  motorhat_->motors[0].coast();
-  wheel_encoder_->ResetCounters();
+  
+  for(auto joint : info_.joints){
+    wheel_encoders_[joint.name]->ResetCounters();
+    motorhat_->motors[motor_output_mappings[joint.name]].coast();
+  }
 
   RCLCPP_INFO(get_logger(), "Successully activated!");
 
@@ -192,8 +203,10 @@ hardware_interface::CallbackReturn motor_interface::on_deactivate(
     RCLCPP_INFO(
       get_logger(), "Deactivating wheel joint %s.", name.c_str());
   }
-  motorhat_->motors[0].clear_all_pwm_outputs(); //TODO replace only with clearing one output
-  wheel_encoder_->ResetCounters(); // needs to be reprogramed to be eble to switch off the interrupt of encoder
+  motorhat_->motors[0].clear_all_pwm_outputs();
+  for(auto joint : info_.joints){
+    wheel_encoders_[joint.name]->ResetCounters();
+  }
   
   RCLCPP_INFO(get_logger(), "Successully deactivated!");
   
@@ -222,8 +235,8 @@ hardware_interface::return_type motor_interface::read(
   {
     if (descr.get_interface_name() == hardware_interface::HW_IF_VELOCITY)
     {
-      wheel_encoder_->RefreshDeltaPulses();
-      auto speed = wheel_encoder_->GetSpeed(0.02); // precision can be compromised
+      wheel_encoders_[descr.get_prefix_name()]->RefreshDeltaPulses();
+      auto speed = wheel_encoders_[descr.get_prefix_name()]->GetSpeed(0.02); // precision can be compromised
       set_state(name, speed);
     }
   }
@@ -240,26 +253,10 @@ hardware_interface::return_type motor_interface::write(
   {
     if(descr.get_interface_name() == hardware_interface::HW_IF_EFFORT){
       int pwm = static_cast<int>(get_command(name) * 1000);
-      motorhat_->motors[motor_output_mapping].set_power(pwm);
+      motorhat_->motors[motor_output_mappings[descr.get_prefix_name()]].set_power(pwm);
     }
   }
-
-  /*// BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
-  std::stringstream ss;
-  ss << "Writing commands:";
-  for (const auto & [name, descr] : joint_command_interfaces_)
-  {
-    // Simulate sending commands to the hardware
-    set_state(name, get_command(name));
-    ss << std::fixed << std::setprecision(2) << std::endl
-       << "\t" << "command " << get_command(name) << " for '" << name << "'!";
-    //set_command();
-    
-
-  }
-  RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 500, "%s", ss.str().c_str());
-  // END: This part here is for exemplary purposes - Please do not copy to your production code
-  */
+  
   return hardware_interface::return_type::OK;
 }
 

@@ -13,5 +13,28 @@ ros2 topic echo /pwm_pid_controller/controller_state
 ```
 5. basic command can be published to topic /pwm_pid_controller/reference
 ```
-ros2 topic pub /pwm_pid_controller/reference control_msgs/msg/MultiDOFCommand "{dof_names: {'front_left_wheel_joint'}, values: {0.2}}"
+ros2 topic pub /pwm_pid_controller/reference control_msgs/msg/MultiDOFCommand "{dof_names: ['front_left_wheel_joint', 'rear_left_wheel_joint', 'front_right_wheel_joint', 'rear_right_wheel_joint'], values: [0.0, 0.0, 0.0, 0.0]}"
+```
+
+## listing available command interfaces
+```
+$ ros2 control list_hardware_interfaces
+command interfaces
+        front_left_wheel_joint/effort [available] [claimed]
+        front_right_wheel_joint/effort [available] [claimed]
+        pwm_pid_controller/front_left_wheel_joint/velocity [available] [unclaimed]
+        pwm_pid_controller/front_right_wheel_joint/velocity [available] [unclaimed]
+        pwm_pid_controller/rear_left_wheel_joint/velocity [available] [unclaimed]
+        pwm_pid_controller/rear_right_wheel_joint/velocity [available] [unclaimed]
+        rear_left_wheel_joint/effort [available] [claimed]
+        rear_right_wheel_joint/effort [available] [claimed]
+state interfaces
+        front_left_wheel_joint/velocity
+        front_right_wheel_joint/velocity
+        pwm_pid_controller/front_left_wheel_joint/velocity
+        pwm_pid_controller/front_right_wheel_joint/velocity
+        pwm_pid_controller/rear_left_wheel_joint/velocity
+        pwm_pid_controller/rear_right_wheel_joint/velocity
+        rear_left_wheel_joint/velocity
+        rear_right_wheel_joint/velocity
 ```
