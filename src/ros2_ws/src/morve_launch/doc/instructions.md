@@ -16,6 +16,12 @@ ros2 topic echo /pwm_pid_controller/controller_state
 ros2 topic pub /pwm_pid_controller/reference control_msgs/msg/MultiDOFCommand "{dof_names: ['front_left_wheel_joint', 'rear_left_wheel_joint', 'front_right_wheel_joint', 'rear_right_wheel_joint'], values: [0.0, 0.0, 0.0, 0.0]}"
 ```
 
+## Sending messages to diff drive controller
+```
+$ ros2 topic pub /diff_drive_controller/cmd_vel geometry_msgs/msg/TwistStamped "{twist: {linear: {x: 0.1, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}}" -r 2
+```
+
+
 ## listing available command interfaces
 ```
 $ ros2 control list_hardware_interfaces

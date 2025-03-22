@@ -236,7 +236,7 @@ hardware_interface::return_type motor_interface::read(
     if (descr.get_interface_name() == hardware_interface::HW_IF_VELOCITY)
     {
       wheel_encoders_[descr.get_prefix_name()]->RefreshDeltaPulses();
-      auto speed = wheel_encoders_[descr.get_prefix_name()]->GetSpeed(0.02); // precision can be compromised
+      auto speed = wheel_encoders_[descr.get_prefix_name()]->GetAngularSpeed(period.seconds()); // precision can be compromised
       set_state(name, speed);
     }
   }

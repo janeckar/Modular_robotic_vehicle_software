@@ -111,12 +111,25 @@ def generate_launch_description():
         executable="spawner",
         arguments=[
             "pwm_pid_controller",
+            "diff_drive_controller",
             "--param-file",
             robot_controllers,
             #"--controller-ros-args",
             #"-r /diffbot_base_controller/cmd_vel:=/cmd_vel",
         ],
     )
+    
+    # diff_drive_controller_spawner = Node(
+    #     package="controller_manager",
+    #     executable="spawner",
+    #     arguments=[
+    #         "diff_drive_controller",
+    #         "--param-file",
+    #         robot_controllers,
+    #         #"--controller-ros-args",
+    #         #"-r diff"
+    #     ]
+    # )
     
     # Delay rviz start after `joint_state_broadcaster`
     # delay_rviz_after_joint_state_broadcaster_spawner = RegisterEventHandler(
@@ -137,6 +150,7 @@ def generate_launch_description():
         control_node,
         robot_state_pub_node,
         PWM_pid_controller_spawner,
+        # diff_drive_controller_spawner, 
         # delay_joint_state_broadcaster_after_PWM_controller_spawner,
         # delay_rviz_after_joint_state_broadcaster_spawner,
         joint_state_broadcaster_spawner,
