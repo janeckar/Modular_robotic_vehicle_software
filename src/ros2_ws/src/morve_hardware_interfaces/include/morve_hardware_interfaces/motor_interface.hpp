@@ -19,6 +19,7 @@ namespace morve_hardware_interfaces {
   class motor_interface : public hardware_interface::SystemInterface {
     private:
       int motor_hat_i2c_addr;
+      std::unordered_map<std::string, size_t> window_sizes;
       std::unordered_map<std::string, int> motor_output_mappings;
       std::unordered_map<std::string, int> encoder_line_A_gpio_pins; // broadcom pin number
       std::unordered_map<std::string, int> encoder_line_B_gpio_pins; // broadcom pin number

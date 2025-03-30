@@ -36,9 +36,15 @@ def generate_launch_description():
         DeclareLaunchArgument(
             "prefix",
             default_value="",
-            description="Prefix of the joint names, useful for \
-                multi-robot setup. If changed than also joint names in controllers configuration \
-                needs to be updated."
+            description="Prefix of the joint names, useful for multi-robot setup.\n\
+        If changed then also joint names in controllers configuration needs to be updated."
+        )
+    )
+    declared_arguments.append(
+        DeclareLaunchArgument(
+            "controllers_file",
+            default_value="morve_controllers.yaml",
+            description="Config file for setting up controllers.",
         )
     )
     
@@ -47,6 +53,7 @@ def generate_launch_description():
     description_file = LaunchConfiguration("description_file")
     gui = LaunchConfiguration("gui")
     prefix = LaunchConfiguration("prefix")
+    controllers_file = LaunchConfiguration("controllers_file")
     
     # get URDF file with use of xacro
     robot_description_content = Command(
@@ -67,7 +74,7 @@ def generate_launch_description():
         [
             FindPackageShare("morve_launch"),
             "config",
-            "morve_controllers.yaml",
+            controllers_file,
         ]
     )
     
@@ -114,8 +121,8 @@ def generate_launch_description():
             "diff_drive_controller",
             "--param-file",
             robot_controllers,
-            #"--controller-ros-args",
-            #"-r /diffbot_base_controller/cmd_vel:=/cmd_vel",
+            "--controller-ros-args",
+            "--remap /diffbot_base_controller/cmd_vel:=/cmd_vel",
         ],
     )
     
@@ -150,9 +157,6 @@ def generate_launch_description():
         control_node,
         robot_state_pub_node,
         PWM_pid_controller_spawner,
-        # diff_drive_controller_spawner, 
-        # delay_joint_state_broadcaster_after_PWM_controller_spawner,
-        # delay_rviz_after_joint_state_broadcaster_spawner,
         joint_state_broadcaster_spawner,
         rviz_node,
     ]

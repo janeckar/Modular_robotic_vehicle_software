@@ -20,11 +20,11 @@ pwm_pid_controller:
 
     reference_and_state_interfaces: ["velocity"]
 
-    gains:
-      front_left_wheel_joint:  {p: 0.0001, i: 1.0, d: 0.0001, i_clamp_max: 3.5, i_clamp_min: -3.5} # i was 10.0 for m/s
-      rear_left_wheel_joint:   {p: 0.0001, i: 1.0, d: 0.0001, i_clamp_max: 3.5, i_clamp_min: -3.5}
-      front_right_wheel_joint: {p: 0.0001, i: 1.0, d: 0.0001, i_clamp_max: 3.5, i_clamp_min: -3.5}
-      rear_right_wheel_joint:  {p: 0.0001, i: 1.0, d: 0.0001, i_clamp_max: 3.5, i_clamp_min: -3.5}
+    gains: # prev i 300.0
+      front_left_wheel_joint:  {p: 60.0, i: 600.0, d: 0.1, i_clamp_max: 3500.0, i_clamp_min: -3500.0} # gains work for average window size = 1 and 6
+      rear_left_wheel_joint:   {p: 60.0, i: 600.0, d: 0.1, i_clamp_max: 3500.0, i_clamp_min: -3500.0} # less of deviation of effort with size 6
+      front_right_wheel_joint: {p: 60.0, i: 600.0, d: 0.1, i_clamp_max: 3500.0, i_clamp_min: -3500.0}
+      rear_right_wheel_joint:  {p: 60.0, i: 600.0, d: 0.1, i_clamp_max: 3500.0, i_clamp_min: -3500.0}
 
 # second layer controller
 diff_drive_controller:
@@ -57,10 +57,10 @@ diff_drive_controller:
 
     linear.x.max_velocity: 1.0
     linear.x.min_velocity: -1.0
-    linear.x.max_acceleration: 0.1
-    linear.x.max_deceleration: -0.1
-    linear.x.max_acceleration_reverse: -0.1
-    linear.x.max_deceleration_reverse: 0.1
+    linear.x.max_acceleration: 0.7
+    linear.x.max_deceleration: -0.7
+    linear.x.max_acceleration_reverse: -0.7
+    linear.x.max_deceleration_reverse: 0.7
     linear.x.max_jerk: .NAN
     linear.x.min_jerk: .NAN
 

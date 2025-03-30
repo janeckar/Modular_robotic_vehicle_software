@@ -66,6 +66,10 @@ hardware_interface::CallbackReturn motor_interface::on_init(
       encoder_line_B_gpio_pins[joint.name] = morve_hardware_interfaces::parse_gpio(joint.parameters["encoder_line_B_gpio_pin"]);
       encoder_pulses_per_rotation[joint.name] = morve_hardware_interfaces::verbose_stoi(joint.parameters["encoder_pulses_per_rotation"]);
       wheel_diameter_metres[joint.name] = std::stod(joint.parameters["wheel_diameter_metres"]);
+      if((window_sizes[joint.name] = morve_hardware_interfaces::verbose_stoi(joint.parameters["window_size"])) < 1){
+        RCLCPP_FATAL(get_logger(), "Window size of %s cannot be zero!", joint.name.c_str());
+        return hardware_interface::CallbackReturn::ERROR;
+      }
     } catch (std::invalid_argument & e){
       RCLCPP_FATAL(get_logger(), e.what());
       return hardware_interface::CallbackReturn::ERROR;
@@ -111,7 +115,6 @@ hardware_interface::CallbackReturn motor_interface::on_init(
       return hardware_interface::CallbackReturn::ERROR;
     }
   }
-  // option to disable the encoder state interfaces from option
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
@@ -132,7 +135,7 @@ hardware_interface::CallbackReturn motor_interface::on_configure(
     for(auto joint : info_.joints){
       auto temp_wheel_encoder = std::make_shared<SpecializedEncoder>(
         encoder_line_A_gpio_pins[joint.name], encoder_line_B_gpio_pins[joint.name], encoder_pulses_per_rotation[joint.name],
-        wheel_diameter_metres[joint.name]);
+        wheel_diameter_metres[joint.name], window_sizes[joint.name]);
       
       wheel_encoders_[joint.name] = std::move(temp_wheel_encoder);
     }
@@ -235,7 +238,7 @@ hardware_interface::return_type motor_interface::read(
   {
     if (descr.get_interface_name() == hardware_interface::HW_IF_VELOCITY)
     {
-      wheel_encoders_[descr.get_prefix_name()]->RefreshDeltaPulses();
+      wheel_encoders_[descr.get_prefix_name()]->update();
       auto speed = wheel_encoders_[descr.get_prefix_name()]->GetAngularSpeed(period.seconds()); // precision can be compromised
       set_state(name, speed);
     }
@@ -252,7 +255,7 @@ hardware_interface::return_type motor_interface::write(
   for(const auto & [name, descr] : joint_command_interfaces_)
   {
     if(descr.get_interface_name() == hardware_interface::HW_IF_EFFORT){
-      int pwm = static_cast<int>(get_command(name) * 1000);
+      int pwm = static_cast<int>(get_command(name));
       motorhat_->motors[motor_output_mappings[descr.get_prefix_name()]].set_power(pwm);
     }
   }

@@ -21,6 +21,11 @@ ros2 topic pub /pwm_pid_controller/reference control_msgs/msg/MultiDOFCommand "{
 $ ros2 topic pub /diff_drive_controller/cmd_vel geometry_msgs/msg/TwistStamped "{twist: {linear: {x: 0.1, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 0.0}}}" -r 2
 ```
 
+## using teleop_twist_keyboard package for commanding to the diff drive controller
+```
+$ ros2 run teleop_twist_keyboard teleop_twist_keyboard --ros-args -p stamped:=True -r /cmd_vel:=diff_drive_controller/cmd_vel
+```
+
 
 ## listing available command interfaces
 ```

@@ -12,6 +12,8 @@
 #include "morve_hardware_drivers/MotorHat_Adafruit/pca9685.h"
 #include "morve_hardware_drivers/MotorHat_Adafruit/tb6612fng.h"
 
+using namespace pca;
+
 TB6612FNG::TB6612FNG(int pwm, int in1, int in2){
     pwm_pin = pwm;
     in1_pin = in1;

@@ -15,6 +15,7 @@
         <param name="encoder_line_B_gpio_pin">gpio5</param>
         <param name="encoder_pulses_per_rotation">265</param>
         <param name="wheel_diameter_metres">0.065</param>
+        <param name="window_size">1</param>
         <command_interface name="effort">
           <param name="min">-1024</param>
           <param name="max">1024</param>
@@ -28,6 +29,7 @@
         <param name="encoder_line_B_gpio_pin">gpio12</param>
         <param name="encoder_pulses_per_rotation">265</param>
         <param name="wheel_diameter_metres">0.065</param>
+        <param name="window_size">1</param>
         <command_interface name="effort">
           <param name="min">-1024</param>
           <param name="max">1024</param>
@@ -41,6 +43,7 @@
         <param name="encoder_line_B_gpio_pin">gpio13</param>
         <param name="encoder_pulses_per_rotation">265</param>
         <param name="wheel_diameter_metres">0.065</param>
+        <param name="window_size">1</param>
         <command_interface name="effort">
           <param name="min">-1024</param>
           <param name="max">1024</param>
@@ -54,6 +57,7 @@
         <param name="encoder_line_B_gpio_pin">gpio19</param>
         <param name="encoder_pulses_per_rotation">265</param>
         <param name="wheel_diameter_metres">0.065</param>
+        <param name="window_size">1</param>
         <command_interface name="effort">
           <param name="min">-1024</param>
           <param name="max">1024</param>

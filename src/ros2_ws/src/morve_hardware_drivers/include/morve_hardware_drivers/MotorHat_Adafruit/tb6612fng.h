@@ -49,7 +49,6 @@ class TB6612FNG_I2C {
     int in1_pin;
     int in2_pin;
     pca9685 pwmModule;
-
   public:
     /**
      * @brief creates object for Motor control with H-bridge TB6612FNG via I2C BUS
