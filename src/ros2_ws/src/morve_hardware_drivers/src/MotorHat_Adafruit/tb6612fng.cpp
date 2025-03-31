@@ -12,6 +12,8 @@
 #include "morve_hardware_drivers/MotorHat_Adafruit/pca9685.h"
 #include "morve_hardware_drivers/MotorHat_Adafruit/tb6612fng.h"
 
+using namespace pca;
+
 TB6612FNG::TB6612FNG(int pwm, int in1, int in2){
     pwm_pin = pwm;
     in1_pin = in1;
@@ -62,7 +64,6 @@ TB6612FNG_I2C::~TB6612FNG_I2C() = default;
 
 void TB6612FNG_I2C::set_power(int power){
     power = std::clamp(power, -PWM_RESOLUTION, PWM_RESOLUTION);
-    std::cout << "duty_cycle: " << power << std::endl;
     
     pwmModule.Write_pwm_led(pwm_pin, 0, std::abs(power)); // TODO maybe add parameter for rising edge time
     if(power < 0){

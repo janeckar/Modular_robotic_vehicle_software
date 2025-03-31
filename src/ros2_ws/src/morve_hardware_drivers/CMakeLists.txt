@@ -27,6 +27,7 @@ target_link_libraries(Encoder INTERFACE wiringPi hardware_error)
 
 # lib SpecializedEncoder
 add_library(SpecializedEncoder SHARED src/Encoder/SpecializedEncoder.cpp)
+
 target_link_libraries(SpecializedEncoder PUBLIC Encoder)
 target_compile_features(SpecializedEncoder PUBLIC cxx_std_20)
 
@@ -42,6 +43,16 @@ target_link_libraries(tb6612fng PUBLIC wiringPi)
 target_compile_features(tb6612fng PUBLIC cxx_std_20)
 target_sources(MotorHat_Adafruit PRIVATE src/MotorHat_Adafruit/motor_hat.cpp)
 target_link_libraries(MotorHat_Adafruit PUBLIC tb6612fng)
+
+# lib Battery_Voltage
+add_library(Battery_Voltage SHARED src/Battery_Voltage/minimal_ina219.cpp)
+target_include_directories(Battery_Voltage
+  PUBLIC
+    "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+    "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"  
+    )
+target_link_libraries(Battery_Voltage PUBLIC wiringPi)
+target_compile_features(Battery_Voltage PUBLIC cxx_std_20)
 
 # lib Sonar
 add_library(Sonar SHARED src/Sonar/HC_SR04.cpp)
@@ -59,6 +70,8 @@ target_link_libraries(test_encoder PUBLIC SpecializedEncoder)
 add_executable(test_motor_hat test/test_motor_hat.cpp)
 target_link_libraries(test_motor_hat PUBLIC MotorHat_Adafruit)
 
+add_executable(test_battery_voltage test/test_minimal_ina219.cpp)
+target_link_libraries(test_battery_voltage PUBLIC Battery_Voltage)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -72,7 +85,7 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
-install(TARGETS test_encoder test_motor_hat
+install(TARGETS test_encoder test_motor_hat test_battery_voltage
   DESTINATION lib/${PROJECT_NAME}
 )
 
@@ -82,7 +95,7 @@ install(
   DESTINATION include/${PROJECT_NAME}
 )
 
-install(TARGETS Encoder SpecializedEncoder tb6612fng MotorHat_Adafruit Sonar hardware_error
+install(TARGETS Encoder SpecializedEncoder tb6612fng MotorHat_Adafruit Sonar Battery_Voltage hardware_error
   EXPORT export_${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib

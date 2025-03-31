@@ -9,12 +9,13 @@
         <param name="motor_hat_i2c_addr">0x60</param>
       </hardware>
 
-      <joint name="${prefix}front_left_motor">
+      <joint name="${prefix}front_left_wheel_joint">
         <param name="motor_hat_output_mapping">motor0</param>
         <param name="encoder_line_A_gpio_pin">gpio7</param>
         <param name="encoder_line_B_gpio_pin">gpio5</param>
         <param name="encoder_pulses_per_rotation">265</param>
         <param name="wheel_diameter_metres">0.065</param>
+        <param name="window_size">1</param>
         <command_interface name="effort">
           <param name="min">-1024</param>
           <param name="max">1024</param>
@@ -22,11 +23,13 @@
         <state_interface name="velocity"/>
       </joint>
 
-      <!--
-      <joint name="${prefix}rear_left_motor">
-        <param name="motor_hat_output_mapping">motor2</param>
+      <joint name="${prefix}rear_left_wheel_joint">
+        <param name="motor_hat_output_mapping">motor1</param>
         <param name="encoder_line_A_gpio_pin">gpio6</param>
         <param name="encoder_line_B_gpio_pin">gpio12</param>
+        <param name="encoder_pulses_per_rotation">265</param>
+        <param name="wheel_diameter_metres">0.065</param>
+        <param name="window_size">1</param>
         <command_interface name="effort">
           <param name="min">-1024</param>
           <param name="max">1024</param>
@@ -34,10 +37,13 @@
         <state_interface name="velocity"/>
       </joint>
 
-      <joint name="${prefix}front_right_motor">
-        <param name="motor_hat_output_mapping">motor3</param>
+      <joint name="${prefix}front_right_wheel_joint">
+        <param name="motor_hat_output_mapping">motor2</param>
         <param name="encoder_line_A_gpio_pin">gpio16</param>
         <param name="encoder_line_B_gpio_pin">gpio13</param>
+        <param name="encoder_pulses_per_rotation">265</param>
+        <param name="wheel_diameter_metres">0.065</param>
+        <param name="window_size">1</param>
         <command_interface name="effort">
           <param name="min">-1024</param>
           <param name="max">1024</param>
@@ -45,17 +51,20 @@
         <state_interface name="velocity"/>
       </joint>
 
-      <joint name="${prefix}rear_right_motor">
-        <param name="motor_hat_output_mapping">motor4</param>
+      <joint name="${prefix}rear_right_wheel_joint">
+        <param name="motor_hat_output_mapping">motor3</param>
         <param name="encoder_line_A_gpio_pin">gpio20</param>
         <param name="encoder_line_B_gpio_pin">gpio19</param>
+        <param name="encoder_pulses_per_rotation">265</param>
+        <param name="wheel_diameter_metres">0.065</param>
+        <param name="window_size">1</param>
         <command_interface name="effort">
           <param name="min">-1024</param>
           <param name="max">1024</param>
         </command_interface>
         <state_interface name="velocity"/>
       </joint>
-      -->
+      
     </ros2_control>
 
   </xacro:macro>

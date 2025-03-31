@@ -35,14 +35,13 @@ $ sudo systemctl start avahi-daemon
 $ sudo systemctl status avahi-daemon
 ```
 
+Set your hostname to your choice and at the end add suffix ".local".
+
 After this operation it should be possible to connect to the Raspberry Pi via ssh
 
 ```
-# from linux cli
+# cli
 $ ssh username@hostname.local
-
-# from powershell on windows
-$ ssh username@hostname
 ```
 
 - to get hostname of your Raspberry Pi type
@@ -137,16 +136,8 @@ $ sudo chmod g+rw /dev/gpiomem
 
 
 
-## Installation of Yarp
-1. Install git
+## Cloning repository with ros2 packages
+zero start the setup script
+first rosdep init, rosdep update, rosdep install --from-paths src -i src 
 
-```
-sudo apt install git
-```
-
-2. install essential packages
-
-```
-sudo apt-get install build-essential git cmake cmake-curses-gui
-```
 

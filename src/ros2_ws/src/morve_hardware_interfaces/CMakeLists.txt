@@ -14,7 +14,7 @@ find_package(rclcpp_lifecycle REQUIRED)
 find_package(morve_hardware_drivers REQUIRED)
 
 # add shared library
-add_library(morve_hardware_interfaces SHARED src/motor_interface.cpp)
+add_library(morve_hardware_interfaces SHARED src/motor_interface.cpp src/parsing_functions.cpp)
 target_include_directories(morve_hardware_interfaces
   PUBLIC
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
@@ -25,7 +25,7 @@ ament_target_dependencies(morve_hardware_interfaces
   hardware_interface
   pluginlib
   rclcpp
-  rclcpp_lifecycle 
+  rclcpp_lifecycle
   morve_hardware_drivers
 )
 pluginlib_export_plugin_description_file(hardware_interface
@@ -67,6 +67,6 @@ install(TARGETS morve_hardware_interfaces
 )
 
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
-ament_export_dependencies(morve_hardware_drivers)
+ament_export_dependencies(morve_hardware_drivers hardware_interface pluginlib rclcpp rclcpp_lifecycle)
 
 ament_package()

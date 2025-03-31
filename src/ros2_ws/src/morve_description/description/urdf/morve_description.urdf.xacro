@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <!-- Macro with constants  -->
+    <xacro:macro name="morve_constants">
+        <xacro:property name="PI" value="3.1415926535897931" scope="parent" />
+        <xacro:property name="base_mass" value="0.3" scope="parent" /> <!-- arbitrary value for base mass -->
+        <xacro:property name="base_width" value="0.16" scope="parent" />
+        <xacro:property name="base_length" value="0.2" scope="parent" />
+        <xacro:property name="base_height" value="0.005" scope="parent" />
+        <xacro:property name="wheel_mass" value="0.3" scope="parent" /> <!-- arbitrary value for wheel mass -->
+        <xacro:property name="track_width" value="0.2" scope="parent" />
+        <xacro:property name="wheel_base" value="0.12" scope="parent" />
+        <xacro:property name="track_width_half" value="${track_width/2}" scope="parent" />
+        <xacro:property name="wheel_base_half" value="${wheel_base/2}" scope="parent" />
+        <xacro:property name="z_offset" value="${base_height/2}" scope="parent" />
+        <xacro:property name="mesh_scale" value="0.001 0.001 0.001" scope="parent" />
+        <xacro:property name="wheel_length" value="0.025" scope="parent" />
+        <xacro:property name="wheel_radius" value="0.0325" scope="parent" />
+    </xacro:macro>
+
+    <!-- Macro for Sonar holder -->
+    <xacro:macro name="sonar_holder" params="prefix parent_link joint_x joint_y joint_z joint_yaw">
+        <!-- Include constants -->
+        <xacro:morve_constants />
+
+        <joint name="${prefix}_sonar_holder_joint" type="fixed">
+            <parent link="${parent_link}"/>
+            <child link="${prefix}_sonar_holder"/>
+            <origin xyz="${joint_x} ${joint_y} ${joint_z}" rpy="0.0 0.0 ${joint_yaw}"/>
+        </joint>
+        
+        <link name="${prefix}_sonar_holder">
+            <visual>
+                <origin xyz="-0.025 0.0 0.0" rpy="0.0 0.0 0.0"/>
+                <geometry>
+                    <mesh filename="package://morve_description/description/meshes/sonar_holder.stl" scale="${mesh_scale}"/>
+                </geometry>
+                <material name="blue"/>
+            </visual>
+        </link>
+    </xacro:macro>
+    
+    <!-- Macro for wheel -->
+    <xacro:macro name="robotic_wheel" params="prefix parent_link rear left">
+        <!-- Include constants -->
+        <xacro:morve_constants />
+        
+        <joint name="${prefix}_wheel_joint" type="continuous">
+            <parent link="${parent_link}"/>
+            <child link="${prefix}_wheel"/>
+            <axis xyz="0 0 1"/>
+            <origin xyz="${left*track_width_half} ${rear*wheel_base_half} ${z_offset}" rpy="0 ${PI/2} 0"/>
+        </joint>
+    
+        <link name="${prefix}_wheel">
+            <visual>
+                <geometry>
+                    <cylinder radius="${wheel_radius}" length="${wheel_length}"/>
+                </geometry>
+                <material name="green"/>
+            </visual>
+        </link>
+    </xacro:macro>
+    
+    <!-- Macro for whole robot -->
+    <xacro:macro name="morve_description_urdf" params="prefix">
+        <!-- Include constants -->
+        <xacro:morve_constants />
+        
+        <!-- Base link -->
+        <link name="${prefix}base_link">
+            <visual>
+                <origin xyz="${base_width/2} ${-base_length/2} ${-z_offset}" rpy="0.0 0.0 ${PI/2}"/>
+                <geometry>
+                    <mesh filename="package://morve_description/description/meshes/base_plate_with_holes.stl" scale="${mesh_scale}"/>
+                </geometry>
+                <material name="white"/>        
+            </visual>
+        </link>
+        
+        <!-- Instantiation of robotic wheels -->
+        <xacro:robotic_wheel prefix="${prefix}front_left" parent_link="${prefix}base_link"
+                             rear="-1" left="1" />
+
+        <xacro:robotic_wheel prefix="${prefix}rear_left" parent_link="${prefix}base_link"
+                             rear="1" left="1" />
+
+        <xacro:robotic_wheel prefix="${prefix}front_right" parent_link="${prefix}base_link"
+                             rear="-1" left="-1" />
+
+        <xacro:robotic_wheel prefix="${prefix}rear_right" parent_link="${prefix}base_link"
+                             rear="1" left="-1" />
+
+        <!-- Instantiation of sonar holders -->
+        <xacro:sonar_holder prefix="${prefix}front" parent_link="${prefix}base_link"
+                            joint_x="0.0" joint_y="${-base_length/2}" joint_z="${z_offset}" joint_yaw="0.0"/>
+
+        <xacro:sonar_holder prefix="${prefix}left_side" parent_link="${prefix}base_link"
+                            joint_x="${base_width/2}" joint_y="0.0" joint_z="${z_offset}" joint_yaw="${PI/2}"/>
+
+        <xacro:sonar_holder prefix="${prefix}right_side" parent_link="${prefix}base_link"
+                            joint_x="${-base_width/2}" joint_y="0.0" joint_z="${z_offset}" joint_yaw="${-PI/2}"/>
+    </xacro:macro>
+</robot>
