@@ -20,11 +20,11 @@ pwm_pid_controller:
 
     reference_and_state_interfaces: ["velocity"]
 
-    gains: # prev i 300.0
-      front_left_wheel_joint:  {p: 60.0, i: 600.0, d: 0.1, i_clamp_max: 3500.0, i_clamp_min: -3500.0} # gains work for average window size = 1 and 6
-      rear_left_wheel_joint:   {p: 60.0, i: 600.0, d: 0.1, i_clamp_max: 3500.0, i_clamp_min: -3500.0} # less of deviation of effort with size 6
-      front_right_wheel_joint: {p: 60.0, i: 600.0, d: 0.1, i_clamp_max: 3500.0, i_clamp_min: -3500.0}
-      rear_right_wheel_joint:  {p: 60.0, i: 600.0, d: 0.1, i_clamp_max: 3500.0, i_clamp_min: -3500.0}
+    gains:
+      front_left_wheel_joint:  {p: 60.0, i: 300.0, d: 0.1, i_clamp_max: 3500.0, i_clamp_min: -3500.0} # gains work for average window size = 1 and 6
+      rear_left_wheel_joint:   {p: 60.0, i: 300.0, d: 0.1, i_clamp_max: 3500.0, i_clamp_min: -3500.0} # less of deviation of effort with size 6
+      front_right_wheel_joint: {p: 60.0, i: 300.0, d: 0.1, i_clamp_max: 3500.0, i_clamp_min: -3500.0}
+      rear_right_wheel_joint:  {p: 60.0, i: 300.0, d: 0.1, i_clamp_max: 3500.0, i_clamp_min: -3500.0}
 
 # second layer controller
 diff_drive_controller:

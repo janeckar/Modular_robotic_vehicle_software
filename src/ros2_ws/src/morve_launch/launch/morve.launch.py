@@ -122,7 +122,7 @@ def generate_launch_description():
             "--param-file",
             robot_controllers,
             "--controller-ros-args",
-            "--remap /diffbot_base_controller/cmd_vel:=/cmd_vel",
+            "--remap /diff_drive_controller/cmd_vel:=/cmd_vel",
         ],
     )
     
@@ -131,11 +131,12 @@ def generate_launch_description():
     #     executable="spawner",
     #     arguments=[
     #         "diff_drive_controller",
-    #         "--param-file",
-    #         robot_controllers,
-    #         #"--controller-ros-args",
-    #         #"-r diff"
+    #         #"--param-file",
+    #         #robot_controllers,
+    #         "--controller-ros-args",
+    #         "--remap /diff"
     #     ]
+    #     parameters=[robot_controllers]
     # )
     
     # Delay rviz start after `joint_state_broadcaster`
