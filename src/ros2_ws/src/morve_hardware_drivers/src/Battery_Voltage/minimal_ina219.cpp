@@ -1,6 +1,6 @@
 /***********************************
  * author: Radek Janečka           *
- * email: gitjaneckar@seznam.cz.cz *
+ * email: gitjaneckar@seznam.cz    *
  * date: 28. 3. 2025               *
  * file: minimal_ina219.cpp        *
  ***********************************/

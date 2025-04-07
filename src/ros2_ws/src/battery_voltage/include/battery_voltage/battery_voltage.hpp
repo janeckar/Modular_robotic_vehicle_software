@@ -1,6 +1,6 @@
 /***********************************
  * author: Radek Janečka           *
- * email: gitjaneckar@seznam.cz.cz *
+ * email: gitjaneckar@seznam.cz    *
  * date: 1. 4. 2025                *
  * file: battery_voltage.hpp       *
  ***********************************/
