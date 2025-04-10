@@ -93,26 +93,43 @@ hardware_interface::CallbackReturn motor_interface::on_init(
       return hardware_interface::CallbackReturn::ERROR;
     }
 
-    if(joint.command_interfaces[0].max == "" || joint.command_interfaces[0].min == ""){
-      RCLCPP_ERROR(
-        get_logger(), "Joint '%s' has '%s' command_interface with no maximum or minimum set.",
-        joint.name.c_str(), joint.command_interfaces[0].name.c_str());
-      return hardware_interface::CallbackReturn::ERROR;
-    }
-
     // state interface
-    if(joint.state_interfaces.size() != 1){
-      RCLCPP_ERROR(get_logger(), "Joint '%s' have %zu state interfaces. 1 expected.",
+    if(joint.state_interfaces.size() < 1 || joint.state_interfaces.size() > 2){
+      RCLCPP_ERROR(get_logger(), "Joint '%s' have %zu state interfaces. 1-2 expected.",
         joint.name.c_str(), joint.state_interfaces.size());
       return hardware_interface::CallbackReturn::ERROR;
     }
-
-    if(joint.state_interfaces[0].name != hardware_interface::HW_IF_VELOCITY){
-      RCLCPP_ERROR(
-        get_logger(), "Joint '%s' has '%s' as state interface. '%s' expected",
-        joint.name.c_str(), joint.command_interfaces[0].name.c_str(),
-        hardware_interface::HW_IF_VELOCITY);
-      return hardware_interface::CallbackReturn::ERROR;
+    
+    // parsing state_interfaces velocity and optional position
+    if(joint.state_interfaces.size() == 1){
+      if(joint.state_interfaces[0].name != hardware_interface::HW_IF_VELOCITY){
+        RCLCPP_ERROR(
+          get_logger(), "Joint '%s' has '%s' as state interface. '%s' expected",
+          joint.name.c_str(), joint.command_interfaces[0].name.c_str(),
+          hardware_interface::HW_IF_VELOCITY);
+        return hardware_interface::CallbackReturn::ERROR;
+      }
+    } else{
+      if(joint.state_interfaces[0].name == joint.state_interfaces[1].name){
+        RCLCPP_ERROR(
+          get_logger(), "Joint '%s' has two identical '%s' state interfaces! '%s' and optional '%s' expected",
+          joint.name.c_str(), joint.command_interfaces[0].name.c_str(),
+          hardware_interface::HW_IF_VELOCITY, hardware_interface::HW_IF_POSITION
+        );
+        return hardware_interface::CallbackReturn::ERROR;
+      }
+      for(auto state_interface : joint.state_interfaces){
+        if(state_interface.name != hardware_interface::HW_IF_VELOCITY && 
+          state_interface.name != hardware_interface::HW_IF_POSITION)
+        {
+          RCLCPP_ERROR(
+            get_logger(), "Joint '%s' has '%s' as state interface. '%s' and optional '%s' expected",
+            joint.name.c_str(), state_interface.name.c_str(),
+            hardware_interface::HW_IF_VELOCITY, hardware_interface::HW_IF_POSITION
+          );
+          return hardware_interface::CallbackReturn::ERROR;
+        }
+      }
     }
   }
 
@@ -170,7 +187,6 @@ hardware_interface::CallbackReturn motor_interface::on_cleanup(
   motorhat_->~motor_hat();
   motorhat_ = nullptr;
 
-  // TODO rewrite the Specialized Encoder to use gpiod for interrupts so the interrupts can be deactivated
   // to be restarted it must be turned off
   for(auto joint : info_.joints){
     wheel_encoders_[joint.name]->~SpecializedEncoder();
@@ -241,6 +257,9 @@ hardware_interface::return_type motor_interface::read(
       wheel_encoders_[descr.get_prefix_name()]->update();
       auto speed = wheel_encoders_[descr.get_prefix_name()]->GetAngularSpeed(period.seconds()); // precision can be compromised
       set_state(name, speed);
+    } else { // position interface
+      auto position = wheel_encoders_[descr.get_prefix_name()]->GetAngularDistance();
+      set_state(name, position);
     }
   }
 

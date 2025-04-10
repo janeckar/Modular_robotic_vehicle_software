@@ -46,6 +46,10 @@ double SpecializedEncoder::GetAngularSpeed(double delta_time) const{
     return (2 * pi * average_delta_pulses) / (pulses_per_rotation * delta_time);
 }
 
+double SpecializedEncoder::GetAngularDistance() const{
+    return 2 * pi * (GetCount() / (double) pulses_per_rotation);
+}
+
 double SpecializedEncoder::GetSpeed(double delta_time) const{
     return (pi * average_delta_pulses * diameter_m) / (pulses_per_rotation * delta_time);
 }

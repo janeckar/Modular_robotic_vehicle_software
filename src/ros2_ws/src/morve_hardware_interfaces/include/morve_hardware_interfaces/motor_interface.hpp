@@ -25,12 +25,9 @@ namespace morve_hardware_interfaces {
       std::unordered_map<std::string, int> encoder_line_B_gpio_pins; // broadcom pin number
       std::unordered_map<std::string, int> encoder_pulses_per_rotation;
       std::unordered_map<std::string, double> wheel_diameter_metres;
-      
+
       std::shared_ptr<motor_hat> motorhat_;
       std::unordered_map<std::string, std::shared_ptr<SpecializedEncoder>> wheel_encoders_;
-
-      // double joint_effort_commands_;
-      // double joint_velocity_states_;
 
     public:
       CallbackReturn on_init(const hardware_interface::HardwareInfo & hardware_info) override;
@@ -44,8 +41,7 @@ namespace morve_hardware_interfaces {
       //std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
       //std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
       hardware_interface::return_type read(const rclcpp::Time &time, const rclcpp::Duration &period) override;
-      hardware_interface::return_type write(const rclcpp::Time &time, const rclcpp::Duration &period) override; // todo replace with valid msgtype???
-      // effort interface message it could use
+      hardware_interface::return_type write(const rclcpp::Time &time, const rclcpp::Duration &period) override;
   };
 }
 
