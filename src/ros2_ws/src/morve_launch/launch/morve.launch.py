@@ -43,7 +43,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "controllers_file",
-            default_value="morve_controllers.yaml",
+            default_value="morve_dead_zone_controllers.yaml",
             description="Config file for setting up controllers.",
         )
     )
@@ -125,34 +125,6 @@ def generate_launch_description():
             "--remap /diff_drive_controller/cmd_vel:=/cmd_vel",
         ],
     )
-    
-    # diff_drive_controller_spawner = Node(
-    #     package="controller_manager",
-    #     executable="spawner",
-    #     arguments=[
-    #         "diff_drive_controller",
-    #         #"--param-file",
-    #         #robot_controllers,
-    #         "--controller-ros-args",
-    #         "--remap /diff"
-    #     ]
-    #     parameters=[robot_controllers]
-    # )
-    
-    # Delay rviz start after `joint_state_broadcaster`
-    # delay_rviz_after_joint_state_broadcaster_spawner = RegisterEventHandler(
-    #     event_handler=OnProcessExit(
-    #         target_action=joint_state_broadcaster_spawner,
-    #         on_exit=[rviz_node],
-    #     )
-    # )
-    
-    # delay_joint_state_broadcaster_after_PWM_controller_spawner = RegisterEventHandler(
-    #     event_handler=OnProcessExit(
-    #         target_action=PWM_pid_controller_spawner,
-    #         on_exit=[joint_state_broadcaster_spawner],
-    #     )
-    # )
     
     nodes = [
         control_node,

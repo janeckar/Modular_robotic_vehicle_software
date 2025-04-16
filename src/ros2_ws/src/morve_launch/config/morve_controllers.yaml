@@ -18,7 +18,7 @@ pwm_pid_controller:
     
     command_interface: effort
 
-    reference_and_state_interfaces: ["velocity", "position"]
+    reference_and_state_interfaces: ["velocity"]
 
     gains:
       front_left_wheel_joint:  {p: 60.0, i: 800.0, d: 1., i_clamp_max: 3500.0, i_clamp_min: -3500.0} # gains work for average window size = 1 and 6

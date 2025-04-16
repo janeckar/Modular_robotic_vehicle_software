@@ -197,6 +197,11 @@ hardware_interface::CallbackReturn motor_interface::on_cleanup(
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
+hardware_interface::CallbackReturn motor_interface::on_shutdown(const rclcpp_lifecycle::State & /*previous_state*/)
+{ 
+  return hardware_interface::CallbackReturn::SUCCESS;
+}
+
 hardware_interface::CallbackReturn motor_interface::on_activate(
   const rclcpp_lifecycle::State & /*pevious_state*/)
 {
@@ -210,7 +215,7 @@ hardware_interface::CallbackReturn motor_interface::on_activate(
     motorhat_->motors[motor_output_mappings[joint.name]].coast();
   }
 
-  RCLCPP_INFO(get_logger(), "Successully activated!");
+  RCLCPP_INFO(get_logger(), "Successfully activated!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
@@ -227,7 +232,7 @@ hardware_interface::CallbackReturn motor_interface::on_deactivate(
     wheel_encoders_[joint.name]->ResetCounters();
   }
   
-  RCLCPP_INFO(get_logger(), "Successully deactivated!");
+  RCLCPP_INFO(get_logger(), "Successfully deactivated!");
   
   return hardware_interface::CallbackReturn::SUCCESS;
 }

@@ -8,7 +8,7 @@ controller_manager:
 # first layer controller
 pwm_pid_controller:
   ros__parameters:
-    type: pid_controller/PidController
+    type: pwm_pid_controller/PwmPidController
 
     dof_names:
       - front_left_wheel_joint
@@ -18,13 +18,13 @@ pwm_pid_controller:
     
     command_interface: effort
 
-    reference_and_state_interfaces: ["velocity", "position"]
+    reference_and_state_interfaces: ["velocity"]
 
     gains:
-      front_left_wheel_joint:  {p: 60.0, i: 300.0, d: 0.1, i_clamp_max: 3500.0, i_clamp_min: -3500.0} # gains work for average window size = 1 and 6
-      rear_left_wheel_joint:   {p: 60.0, i: 300.0, d: 0.1, i_clamp_max: 3500.0, i_clamp_min: -3500.0} # less of deviation of effort with size 6
-      front_right_wheel_joint: {p: 60.0, i: 300.0, d: 0.1, i_clamp_max: 3500.0, i_clamp_min: -3500.0}
-      rear_right_wheel_joint:  {p: 60.0, i: 300.0, d: 0.1, i_clamp_max: 3500.0, i_clamp_min: -3500.0}
+      front_left_wheel_joint:  {p: 10.0, i: 300.0, d: 0.1, i_clamp_max: 3500.0, i_clamp_min: -3500.0, out_dead_zone_high: 270.0, out_dead_zone_low: -270.0} # gains work for average window size = 1 and 6
+      rear_left_wheel_joint:   {p: 10.0, i: 300.0, d: 0.1, i_clamp_max: 3500.0, i_clamp_min: -3500.0, out_dead_zone_high: 270.0, out_dead_zone_low: -270.0} # less of deviation of effort with size 6
+      front_right_wheel_joint: {p: 10.0, i: 300.0, d: 0.1, i_clamp_max: 3500.0, i_clamp_min: -3500.0, out_dead_zone_high: 270.0, out_dead_zone_low: -270.0}
+      rear_right_wheel_joint:  {p: 10.0, i: 300.0, d: 0.1, i_clamp_max: 3500.0, i_clamp_min: -3500.0, out_dead_zone_high: 270.0, out_dead_zone_low: -270.0}
 
 # second layer controller
 diff_drive_controller:
