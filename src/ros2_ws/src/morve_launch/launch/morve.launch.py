@@ -28,7 +28,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "gui",
-            default_value="true",
+            default_value="false",
             description="Start Rviz2 and Joint state publisher gui automatically.",
         )
     )
@@ -113,7 +113,20 @@ def generate_launch_description():
         arguments=["joint_state_broadcaster",],
     )
     
-    PWM_pid_controller_spawner = Node(
+    PWM_dead_zone_pid_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=[
+            "pwm_dead_zone_pid_controller",
+            "diff_dead_zone_drive_controller",
+            "--param-file",
+            robot_controllers,
+            "--controller-ros-args",
+            "--remap /diff_dead_zone_drive_controller/cmd_vel:=/cmd_vel",
+        ],
+    )
+    
+    PWM_pid_controller = Node(
         package="controller_manager",
         executable="spawner",
         arguments=[
@@ -121,15 +134,17 @@ def generate_launch_description():
             "diff_drive_controller",
             "--param-file",
             robot_controllers,
+            "--load-only",
             "--controller-ros-args",
-            "--remap /diff_drive_controller/cmd_vel:=/cmd_vel",
+            "--remap /diff_drive_controller/cmd_vel:=/cmd_vel"
         ],
     )
     
     nodes = [
         control_node,
         robot_state_pub_node,
-        PWM_pid_controller_spawner,
+        PWM_dead_zone_pid_controller_spawner,
+        PWM_pid_controller,
         joint_state_broadcaster_spawner,
         rviz_node,
     ]

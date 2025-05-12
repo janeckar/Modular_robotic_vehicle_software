@@ -51,7 +51,7 @@ diff_drive_controller:
     # open_loop: true
     # enable_odom_tf: true
 
-    cmd_vel_timeout: 0.5 # seconds
+    cmd_vel_timeout: 0.1 # seconds
     # publish_limited_velocity: true
     # velocity_rolling_window_size: 10 # used in odemetry
 
@@ -71,4 +71,4 @@ diff_drive_controller:
     angular.z.max_acceleration_reverse: -10.0
     angular.z.max_deceleration_reverse: 10.0
     angular.z.max_jerk: .NAN
-    angular.z.min_jerk: .NAN                          
+    angular.z.min_jerk: .NAN

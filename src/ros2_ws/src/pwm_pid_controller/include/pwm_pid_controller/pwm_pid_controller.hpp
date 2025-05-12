@@ -14,7 +14,7 @@
 //
 // Authors: Daniel Azanov, Dr. Denis
 //
-
+// Original file: pid_controller.hpp
 
 /***********************************
  * modified by: Radek Janečka      *
@@ -38,6 +38,10 @@
 
 namespace pwm_pid_controller
 {
+/**
+ * @brief Impelentation of chainable pid controller used primaly for regulation of velocity state and external command to pid
+ * 
+ */
 class PwmPidController : public controller_interface::ChainableControllerInterface
 {
   public:
