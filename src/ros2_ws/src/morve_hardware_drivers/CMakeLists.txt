@@ -61,7 +61,7 @@ target_include_directories(Sonar
     "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
     "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>"
     )
-
+target_link_libraries(Sonar PUBLIC wiringPi)
 
 # executables
 add_executable(test_encoder test/test_encoder.cpp)
@@ -72,6 +72,9 @@ target_link_libraries(test_motor_hat PUBLIC MotorHat_Adafruit)
 
 add_executable(test_battery_voltage test/test_minimal_ina219.cpp)
 target_link_libraries(test_battery_voltage PUBLIC Battery_Voltage)
+
+add_executable(test_sonar test/test_sonar_timeout.cpp)
+target_link_libraries(test_sonar  PUBLIC Sonar)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -85,7 +88,7 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
-install(TARGETS test_encoder test_motor_hat test_battery_voltage
+install(TARGETS test_encoder test_motor_hat test_battery_voltage test_sonar
   DESTINATION lib/${PROJECT_NAME}
 )
 

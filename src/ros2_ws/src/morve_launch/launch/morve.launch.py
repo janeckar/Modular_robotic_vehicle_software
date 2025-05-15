@@ -28,7 +28,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "gui",
-            default_value="true",
+            default_value="false",
             description="Start Rviz2 and Joint state publisher gui automatically.",
         )
     )
@@ -43,7 +43,7 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "controllers_file",
-            default_value="morve_controllers.yaml",
+            default_value="morve_dead_zone_controllers.yaml",
             description="Config file for setting up controllers.",
         )
     )
@@ -113,7 +113,20 @@ def generate_launch_description():
         arguments=["joint_state_broadcaster",],
     )
     
-    PWM_pid_controller_spawner = Node(
+    PWM_dead_zone_pid_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=[
+            "pwm_dead_zone_pid_controller",
+            "diff_dead_zone_drive_controller",
+            "--param-file",
+            robot_controllers,
+            "--controller-ros-args",
+            "--remap /diff_dead_zone_drive_controller/cmd_vel:=/cmd_vel",
+        ],
+    )
+    
+    PWM_pid_controller = Node(
         package="controller_manager",
         executable="spawner",
         arguments=[
@@ -121,42 +134,17 @@ def generate_launch_description():
             "diff_drive_controller",
             "--param-file",
             robot_controllers,
+            "--load-only",
             "--controller-ros-args",
-            "--remap /diffbot_base_controller/cmd_vel:=/cmd_vel",
+            "--remap /diff_drive_controller/cmd_vel:=/cmd_vel"
         ],
     )
-    
-    # diff_drive_controller_spawner = Node(
-    #     package="controller_manager",
-    #     executable="spawner",
-    #     arguments=[
-    #         "diff_drive_controller",
-    #         "--param-file",
-    #         robot_controllers,
-    #         #"--controller-ros-args",
-    #         #"-r diff"
-    #     ]
-    # )
-    
-    # Delay rviz start after `joint_state_broadcaster`
-    # delay_rviz_after_joint_state_broadcaster_spawner = RegisterEventHandler(
-    #     event_handler=OnProcessExit(
-    #         target_action=joint_state_broadcaster_spawner,
-    #         on_exit=[rviz_node],
-    #     )
-    # )
-    
-    # delay_joint_state_broadcaster_after_PWM_controller_spawner = RegisterEventHandler(
-    #     event_handler=OnProcessExit(
-    #         target_action=PWM_pid_controller_spawner,
-    #         on_exit=[joint_state_broadcaster_spawner],
-    #     )
-    # )
     
     nodes = [
         control_node,
         robot_state_pub_node,
-        PWM_pid_controller_spawner,
+        PWM_dead_zone_pid_controller_spawner,
+        PWM_pid_controller,
         joint_state_broadcaster_spawner,
         rviz_node,
     ]

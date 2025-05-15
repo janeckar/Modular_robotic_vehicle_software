@@ -1,0 +1,38 @@
+sonar_distance:
+  trigger_gpio:
+    type: int
+    read_only: true
+    description: "A read-only number of GPIO pin connected to trigger pin without deafault value."
+    validation:
+      bounds<>: [2, 27]
+  echo_gpio:
+    type: int
+    read_only: true
+    description: "A read-only number of GPIO pin connected to echo pin without default value."
+    validation:
+      bounds<>: [2, 27]
+  measurement_time:
+    type: int
+    default_value: 30
+    read_only: true
+    description: "Measurement time in ms for returned distance from sonar."
+    validation:
+      gt_eq<>: [30]
+  field_of_view:
+    type: double
+    default_value: 15.0
+    description: "Field of view in degrees of the sonar sensor."
+    validation:
+      gt_eq<>: [0.0]
+  min_range:
+    type: double
+    default_value: 0.02
+    description: "Minimal measurable distance in metres from the sonar sensor."
+    validation:
+      gt_eq<>: [0.0]
+  max_range:
+    type: double
+    default_value: 3.00
+    description: "Maximal measurable distance in metres from the sonar sensor."
+    validation:
+      gt_eq<>: [0.0]

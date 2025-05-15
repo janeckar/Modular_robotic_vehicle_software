@@ -3,10 +3,11 @@
 // inspired (used from): http://wiki.ros.org/Drivers/Tutorials/DistanceMeasurementWithUltrasonicSensorHC-SR04Cpp
 //
 
+#include <string>
 #include <wiringPi.h>
 #include "morve_hardware_drivers/Sonar/HC_SR04.h"
+#include "morve_hardware_drivers/hardware_error.h"
 
-int HC_SR04::count = 0;
 volatile long long HC_SR04::startTimeUsec = 0;
 volatile long long HC_SR04::travelTimeUsec = 0;
 int HC_SR04::echo = 0;
@@ -26,13 +27,15 @@ void HC_SR04::EchoInterrupt(){
 HC_SR04::HC_SR04(int trigger_pin, int echo_pin){
   trigger = trigger_pin;
   echo = echo_pin;
-  // Set HC_SR04 id
-  //id = echo;
-  //count++;
   
   pinMode(trigger, OUTPUT);
   pinMode(echo, INPUT);
-  wiringPiISR(echo, INT_EDGE_BOTH, HC_SR04::EchoInterrupt);
+  int res = wiringPiISR(echo, INT_EDGE_BOTH, HC_SR04::EchoInterrupt);
+  if(res < 0){
+    pinMode(trigger, INPUT);
+    std::string msg = "Tried to register interrupt for GPIO pin number " + std::to_string(echo) + " but probably the GPIO pin is already in use.";
+    throw hardware_error(msg);
+  }
   digitalWrite(trigger, LOW);
   delay(500);
 }
@@ -40,26 +43,32 @@ HC_SR04::HC_SR04(int trigger_pin, int echo_pin){
 HC_SR04::~HC_SR04(){
   pinMode(echo, INPUT);
   pinMode(trigger, INPUT);
-  //count--;
 }
 
-double HC_SR04::Distance(int timeout)
+double HC_SR04::Distance(int measurement_time_ms)
 {
-  delay(10);
   SendTrigger();
 
-  delay(20 + timeout); // 20 ms so the ultrasound has time to travel back
+  if(measurement_time_ms < 30){ // 30 ms
+    delay(30);
+  } else{
+    delay(measurement_time_ms);
+  }
 
-  //distanceMeters = 100*((travelTimeUsec/1000000.0)*340.29)/2;
+  // distanceMeters = 100*((travelTimeUsec/1000000.0)*340.29)/2;
   distance_cm = travelTimeUsec * 340.29 / 20000;
 
   return distance_cm;
 } 
 
-long long HC_SR04::MeassureSensorTimeout(int timeout_ms){
-  delay(10);
+long long HC_SR04::MeassureSensorTimeout(int measurement_time_ms){
   SendTrigger();
-  delay(20 + timeout_ms);
+
+  if(measurement_time_ms < 30){
+    delay(30);
+  } else{
+    delay(measurement_time_ms);
+  }
 
   return travelTimeUsec;
 }
@@ -70,5 +79,3 @@ void HC_SR04::SendTrigger()
   delayMicroseconds(10);
   digitalWrite(trigger, LOW);
 }
-
-

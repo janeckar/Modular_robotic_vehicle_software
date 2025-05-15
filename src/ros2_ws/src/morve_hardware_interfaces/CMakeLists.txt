@@ -32,11 +32,6 @@ pluginlib_export_plugin_description_file(hardware_interface
   morve_hardware_interfaces.xml)
 
 
-add_executable(test_stoi_hex src/test_stoi_hex.cpp)
-target_compile_features(test_stoi_hex PUBLIC cxx_std_20)
-
-
-
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights
@@ -48,11 +43,6 @@ if(BUILD_TESTING)
   set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
-
-# executables install
-install(TARGETS test_stoi_hex
-  DESTINATION lib/${PROJECT_NAME}
-)
 
 # library install
 install(DIRECTORY include/${PROJECT_NAME}/

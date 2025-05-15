@@ -1,0 +1,9 @@
+<library path="pwm_pid_controller">
+  <class name="pwm_pid_controller/PwmPidController"
+         type="pwm_pid_controller::PwmPidController" base_class_type="controller_interface::ChainableControllerInterface">
+  <description>
+      PwmPidController ros2_control controller.
+  </description>
+  </class>
+</library>
+  

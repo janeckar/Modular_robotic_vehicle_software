@@ -73,6 +73,13 @@ class SpecializedEncoder : public Encoder{
     double GetAngularSpeed(double delta_time) const;
 
     /**
+     * @brief Get the Angular Distance
+     * 
+     * @return double angle in radians
+     */
+    double GetAngularDistance() const;
+
+    /**
      * @brief Get Speed in metres per second
      * 
      * Functionality depends on periodical calls to update()
