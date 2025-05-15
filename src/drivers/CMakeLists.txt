@@ -1,4 +1,0 @@
-add_subdirectory(MotorHat_Adafruit)
-add_subdirectory(Sonar)
-add_subdirectory(simple_tests)
-add_subdirectory(Encoder)
