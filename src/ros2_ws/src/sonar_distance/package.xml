@@ -8,7 +8,9 @@
   <license>Apache-2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
-  <build_depend>morve_hardware_drivers</build_depend>
+  <depend>rclcpp</depend>
+  <depend>morve_hardware_drivers</depend>
+  <depend>sensor_msgs</depend>
 
 
   <test_depend>ament_lint_auto</test_depend>

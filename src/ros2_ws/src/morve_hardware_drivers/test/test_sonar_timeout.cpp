@@ -1,12 +1,13 @@
 #include <iostream>
 #include <wiringPi.h>
-#include "HC_SR04.h"
+#include "morve_hardware_drivers/Sonar/HC_SR04.h"
 
 using namespace std;
 
 // Broadcom pinout right now
-const int trigger = 18;  // wPi .. 1
-const int echo = 24;     // wPi .. 5
+const int trigger = 22;  // wPi ..
+const int echo = 23;     // wPi .. 
+
 
 
 int main() {
@@ -17,7 +18,7 @@ int main() {
     HC_SR04 sonar(trigger, echo);
 
     while(1){
-        //cout << "Distance is " << sonar.Distance(30000) << " cm." << endl;
+        cout << "Distance is " << sonar.Distance(300) << " cm." << endl;
         cout << "Sensor timeout is " << sonar.MeassureSensorTimeout(300) << "us\n";
         delay(1000);
     }
