@@ -1,6 +1,7 @@
 # build directory
 *cmake-build-debug/
 *build*
+*doc*
 
 # ros2 generated directories
 *log*

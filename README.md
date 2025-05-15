@@ -24,3 +24,13 @@
         rosdep install --from-paths ./ -i -y --rosdistro ${ROS_DISTRO}
     ```
 
+6. To prepare the project on Raspberry Pi follow the setup_instructions.md in the Raspberry_Pi_setting folder
+7. TO build the project go in the ros2_ws folder and type:
+    ```
+        colcon build
+    ```
+    To source the installation type:
+    ```
+        source ./install/setup.bash
+    ```
+8. after this all launch files are available in package morve_launch
