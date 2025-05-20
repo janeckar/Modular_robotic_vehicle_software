@@ -26,15 +26,10 @@ class SonarPublisher : public rclcpp::Node
     sonar_distance::Params params_;
     int measure_time_;
 
-    std::thread thread_;
-    std::atomic<bool> running_{true};
-
-    void measure_range_loop(std::weak_ptr<HC_SR04> sonar_hw, std::weak_ptr<rclcpp::Publisher<sensor_msgs::msg::Range>> weak_publisher);
-    void check_parameters();
+    void measure_callback();
 
   public:
     SonarPublisher();
-    ~SonarPublisher();
     void init();
 };
 

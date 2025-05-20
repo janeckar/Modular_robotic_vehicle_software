@@ -27,7 +27,7 @@ void HC_SR04::EchoInterrupt(){
 HC_SR04::HC_SR04(int trigger_pin, int echo_pin){
   trigger = trigger_pin;
   echo = echo_pin;
-  
+
   pinMode(trigger, OUTPUT);
   pinMode(echo, INPUT);
   int res = wiringPiISR(echo, INT_EDGE_BOTH, HC_SR04::EchoInterrupt);
@@ -55,16 +55,13 @@ double HC_SR04::Distance(int measurement_time_ms)
     delay(measurement_time_ms);
   }
 
-  // distanceMeters = 100*((travelTimeUsec/1000000.0)*340.29)/2;
-  distance_cm = travelTimeUsec * 340.29 / 20000;
-
-  return distance_cm;
+  return read_distance();
 } 
 
 long long HC_SR04::MeassureSensorTimeout(int measurement_time_ms){
   SendTrigger();
 
-  if(measurement_time_ms < 30){
+  if(measurement_time_ms < 30){ // 30 ms
     delay(30);
   } else{
     delay(measurement_time_ms);
@@ -76,6 +73,19 @@ long long HC_SR04::MeassureSensorTimeout(int measurement_time_ms){
 void HC_SR04::SendTrigger()
 {
   digitalWrite(trigger, HIGH);
-  delayMicroseconds(10);
+  delayMicroseconds(12); // 10 microseconds
   digitalWrite(trigger, LOW);
 }
+
+void HC_SR04::request_distance()
+{
+  SendTrigger();
+}
+
+double HC_SR04::read_distance()
+{
+  // distanceMeters = 100*((travelTimeUsec/1'000'000.0)*340.29)/2;
+  distance_m = travelTimeUsec * 340.29 / 2'000'000;
+
+  return distance_m;
+} 

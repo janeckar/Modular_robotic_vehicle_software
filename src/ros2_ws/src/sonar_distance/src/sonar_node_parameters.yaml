@@ -15,7 +15,7 @@ sonar_distance:
     type: int
     default_value: 30
     read_only: true
-    description: "Measurement time in ms for returned distance from sonar."
+    description: "Measurement time in miliseconds for returned distance from sonar."
     validation:
       gt_eq<>: [30]
   field_of_view:

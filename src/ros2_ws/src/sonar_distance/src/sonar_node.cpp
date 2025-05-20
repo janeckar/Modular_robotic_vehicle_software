@@ -49,43 +49,21 @@ void SonarPublisher::init(){
     throw;
   }
 
-  // vytvorit publisher
+  // creates publisher publishing to the topic named as the node name 
   std::string topic_name = "/" + std::string(this->get_name());
   publisher_ = this->create_publisher<sensor_msgs::msg::Range>(topic_name, rclcpp::QoS(1));
 
-  thread_ = std::thread(&SonarPublisher::measure_range_loop, this, std::weak_ptr<HC_SR04>(sonar_),
-                        std::weak_ptr<rclcpp::Publisher<sensor_msgs::msg::Range>>(publisher_));
+  timer_ = this->create_wall_timer(std::chrono::milliseconds(params_.measurement_time), bind(&SonarPublisher::measure_callback, this));
 }
 
-SonarPublisher::~SonarPublisher(){
-  running_ = false;
-  if (thread_.joinable()) {
-      thread_.join();
-  }
-}
+void SonarPublisher::measure_callback(){
+  range_msg_.range = sonar_->read_distance();
+  range_msg_.header.stamp = this->now();
+  range_msg_.header.frame_id = this->get_name();
 
-void SonarPublisher::measure_range_loop(std::weak_ptr<HC_SR04> sonar_hw, std::weak_ptr<rclcpp::Publisher<sensor_msgs::msg::Range>> weak_publisher){
-  auto template_msg = range_msg_;
+  sonar_->request_distance();
 
-  while (rclcpp::ok() && running_) {
-    auto sonar = sonar_hw.lock();
-    if(!sonar){
-      RCLCPP_WARN(this->get_logger(), "Hardware sonar is no longer available. Exiting thread.");
-      break;
-    }
-
-    template_msg.range = sonar->Distance(measure_time_); // blocking operation
-    template_msg.header.stamp = this->now();
-    template_msg.header.frame_id = this->get_name();
-
-    auto publisher = weak_publisher.lock();
-    if(!publisher){
-      RCLCPP_WARN(this->get_logger(), "Publisher is no longer available. Exiting thread.");
-      break;
-    }
-
-    publisher->publish(template_msg);
-  }
+  publisher_->publish(range_msg_);
 }
 
 } // namespace sonar_distance
@@ -101,7 +79,6 @@ int main(int argc, char* argv[])
   } catch(const hardware_error & e){
 
   } catch(const std::exception & e){}
-
   
   rclcpp::shutdown();
   return 0;

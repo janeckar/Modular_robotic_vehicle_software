@@ -59,7 +59,7 @@ install(
   DESTINATION include/${PROJECT_NAME}
 )
 
-install(TARGETS sonar_node_parameters
+install(TARGETS sonar_node_parameters sonar_publisher
   EXPORT export_${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
