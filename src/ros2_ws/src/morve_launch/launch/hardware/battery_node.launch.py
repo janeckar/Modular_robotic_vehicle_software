@@ -40,7 +40,7 @@ def generate_launch_description():
     battery_node = Node(
         package="battery_voltage",
         executable="battery_voltage",
-        output="screen",
+        output="both",
         parameters=[{"low_voltage_level": low_voltage_level, "ina219_address": ina219_address}],
         namespace=prefix
     )

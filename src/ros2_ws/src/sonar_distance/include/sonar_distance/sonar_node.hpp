@@ -18,19 +18,34 @@ namespace sonar_distance{
 class SonarPublisher : public rclcpp::Node
 {
   private:
-    rclcpp::TimerBase::SharedPtr timer_;
     rclcpp::Publisher<sensor_msgs::msg::Range>::SharedPtr publisher_;
     std::shared_ptr<HC_SR04> sonar_;
     sensor_msgs::msg::Range range_msg_;
     std::shared_ptr<sonar_distance::ParamListener> param_listener_;
     sonar_distance::Params params_;
     int measure_time_;
+    int time_between_measurements_;
 
     void measure_callback();
 
   public:
     SonarPublisher();
+    
+    /**
+     * @brief Initializes the sonar node, sets up parameters, and prepares the publisher.
+     * 
+     * This method should be called after creating an instance of SonarPublisher.
+     * It initializes the sonar hardware, sets up the publisher, and prepares the parameters.
+     */
     void init();
+    void update_params();
+
+    std::shared_ptr<rclcpp::Publisher<sensor_msgs::msg::Range>> get_publisher() const { return publisher_; }
+    std::shared_ptr<HC_SR04> get_sonar() const { return sonar_; }
+    const sonar_distance::Params & get_params() const { return params_; }
+    const sensor_msgs::msg::Range & get_range_msg() const { return range_msg_; }
+    const int & get_measure_time() const { return measure_time_; }
+    const int & get_time_between_measurements() const { return time_between_measurements_; }
 };
 
 } // namespace sonar_distance

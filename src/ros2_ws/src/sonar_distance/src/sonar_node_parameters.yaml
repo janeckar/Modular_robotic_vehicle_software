@@ -15,7 +15,14 @@ sonar_distance:
     type: int
     default_value: 30
     read_only: true
-    description: "Measurement time in miliseconds for returned distance from sonar."
+    description: "Measurement time in miliseconds for returned distance from sonar. Minimal value is 30ms."
+    validation:
+      gt_eq<>: [30]
+  time_between_measurements:
+    type: int
+    default_value: 30
+    read_only: true
+    description: "Time in miliseconds between two measurements. Minimal value is 30ms."
     validation:
       gt_eq<>: [30]
   field_of_view:

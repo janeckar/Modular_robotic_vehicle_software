@@ -23,18 +23,18 @@ generate_parameter_library(sonar_node_parameters
   src/sonar_node_parameters.yaml
 )
 
-add_executable(sonar_publisher
+add_executable(sonar_node
   src/sonar_node.cpp
 )
-target_compile_features(sonar_publisher PUBLIC cxx_std_17)
-target_include_directories(sonar_publisher PUBLIC
+target_compile_features(sonar_node PUBLIC cxx_std_17)
+target_include_directories(sonar_node PUBLIC
   $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
 )
-target_link_libraries(sonar_publisher PUBLIC
+target_link_libraries(sonar_node PUBLIC
   sonar_node_parameters
 )
-ament_target_dependencies(sonar_publisher PUBLIC ${THIS_PACKAGE_INCLUDE_DEPENDS})
+ament_target_dependencies(sonar_node PUBLIC ${THIS_PACKAGE_INCLUDE_DEPENDS})
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -49,7 +49,7 @@ if(BUILD_TESTING)
 endif()
 
 # executable install
-install(TARGETS sonar_publisher
+install(TARGETS sonar_node
   DESTINATION lib/${PROJECT_NAME}
 )
 
@@ -59,7 +59,7 @@ install(
   DESTINATION include/${PROJECT_NAME}
 )
 
-install(TARGETS sonar_node_parameters sonar_publisher
+install(TARGETS sonar_node_parameters sonar_node
   EXPORT export_${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
